@@ -31,7 +31,6 @@ from MyGraph import MyGraph
 class GraphWidget(QtGui.QGraphicsView):
     def __init__(self,graph):
         QtGui.QGraphicsView.__init__(self)
-
         self.timerId = 0
 
         scene = QtGui.QGraphicsScene(self)
