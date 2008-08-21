@@ -14,8 +14,10 @@ class Edge(QtGui.QGraphicsItem):
         self.sourcePoint = QtCore.QPointF()
         self.destPoint = QtCore.QPointF()
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
+
         self.source = sourceNode
         self.dest = destNode
+
         self.source.addEdge(self)
         self.dest.addEdge(self)
         self.adjust()
@@ -62,7 +64,8 @@ class Edge(QtGui.QGraphicsItem):
 
         return QtCore.QRectF(self.sourcePoint,
                              QtCore.QSizeF(self.destPoint.x() - self.sourcePoint.x(),
-                                           self.destPoint.y() - self.sourcePoint.y())).normalized().adjusted(-extra, -extra, extra, extra)
+                                           self.destPoint.y() - self.sourcePoint.y())
+                             ).normalized().adjusted(-extra, -extra, extra, extra)
 
     def paint(self, painter, option, widget):
         if not self.source or not self.dest:
