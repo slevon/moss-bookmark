@@ -60,7 +60,7 @@ class Edge(QtGui.QGraphicsItem):
             return QtCore.QRectF()
 
         penWidth = 1
-        extra = (penWidth + self.arrowSize) / 2.0
+        extra = (penWidth+self.arrowSize) / 2.0
 
         return QtCore.QRectF(self.sourcePoint,
                              QtCore.QSizeF(self.destPoint.x() - self.sourcePoint.x(),
