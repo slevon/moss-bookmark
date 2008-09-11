@@ -61,15 +61,22 @@ class MaNode(QtGui.QGraphicsItem):
                              MaNode.NWigth+adjust,MaNode.NHigh+adjust)
     def addGEdge(self,edge):
         edge.adjust()
+    #move edge follow node when node move
     def itemChange(self,change,value):
         if change == QtGui.QGraphicsItem.ItemPositionChange:
-            print self.graph.getEdge(self.name)
+            gEdges = self.graph.getGEdges(self.name)
+            for gEdge in gEdges:
+                gEdge.adjust()
         return QtGui.QGraphicsItem.itemChange(self,change,value)
     def mousePressEvent(self, event):
         self.update()
         QtGui.QGraphicsItem.mousePressEvent(self, event)
     def mouseReleaseEvent(self,event):
         self.update()
+        #update edge
+        gEdges = self.graph.getGEdges(self.name)
+        for gEdge in gEdges:
+            gEdge.adjust()
         QtGui.QGraphicsItem.mouseReleaseEvent(self, event)
 class MaEdge(QtGui.QGraphicsItem):
     Pi = math.pi
@@ -167,10 +174,11 @@ class MaEdge(QtGui.QGraphicsItem):
         #painter.drawPolygon(QtGui.QPolygonF([line.p2(), destArrowP1, destArrowP2]))
 
 class DrawWidget(QtGui.QGraphicsView):
+    scensSize = 400
     def __init__(self):
         QtGui.QGraphicsView.__init__(self)
         self.scene = QtGui.QGraphicsScene(self)
-        self.scene.setSceneRect(-20,-20,520,520)#scene size 0-500
+        self.scene.setSceneRect(-20,-20,DrawWidget.scensSize+20,DrawWidget.scensSize+20)#scene size 0-500
         self.setScene(self.scene)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.graph = {}
@@ -182,7 +190,7 @@ class DrawWidget(QtGui.QGraphicsView):
             newitem = MaNode(self,node)
             self.graph[node] = []
             self.gNode[node] = newitem
-            newitem.setPos(random.randint(0,500),random.randint(0,500))
+            newitem.setPos(random.randint(0,DrawWidget.scensSize),random.randint(0,DrawWidget.scensSize))
             self.scene.addItem(newitem)
             self.kownt += 1
         elif type(node) == 'MaNode':
@@ -190,16 +198,17 @@ class DrawWidget(QtGui.QGraphicsView):
         else:
             pass
     def addEdge(self,source,dest):
+        #create Edge by name
+        if self.hasEdge(source, dest):
+            print "Has edge",source,'<==>',dest,'already'
+            return
         if (type(source) == str) and (type(dest) == str):
-            #create Edge by name
-
             #add to graph skeleton
             if source in self.graph:
                 self.graph[source].append(dest)
             else:#create new node
                 self.addNode(source)
                 self.graph[source] =[dest]
-                print self.graph[source]
 
 
             if dest in self.graph:
@@ -218,7 +227,7 @@ class DrawWidget(QtGui.QGraphicsView):
                 self.gEdge[dest].append(newGEdge)
             else:
                 self.gEdge[dest] = [newGEdge]
-            self.scene.addItem(MaEdge(self.gNode[source],self.gNode[dest]))
+            self.scene.addItem(newGEdge)
         else:
             pass
 
@@ -237,11 +246,34 @@ class DrawWidget(QtGui.QGraphicsView):
         return self.graph
     def getEdge(self,nodeName):
         return self.graph[nodeName]
-    def getGEdge(self,nodeName):
-        return self.gEdge[nodeName]
+    def getGEdges(self,nodeName):
+        if nodeName in self.gEdge:
+            return self.gEdge[nodeName]
+        return []
+    def hasEdge(self,source,dest):
+        if source in self.graph and dest in self.graph:
+            if source in self.graph[dest]:
+                return True
+            else:
+                return False
+        else:
+            return False
+    def getAllGEdges(self):
+        result = []
+        for node in self.graph:
+            result.extend(self.gEdge(node))
+        return result
 
+    #zoomable feature
+    def wheelEvent(self, event):
+        self.scaleView(math.pow(2.0, -event.delta() / 240.0))
+    def scaleView(self, scaleFactor):
+        factor = self.matrix().scale(scaleFactor, scaleFactor).mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
 
+        if factor < 0.07 or factor > 100:
+            return
 
+        self.scale(scaleFactor, scaleFactor)
 '''Main'''
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
