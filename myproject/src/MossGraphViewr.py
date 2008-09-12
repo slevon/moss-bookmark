@@ -1,6 +1,7 @@
 import sys
 from PyQt4 import QtCore, QtGui
 from xml.dom import minidom
+from GraphMLHelpr import GraphMLHelpr
 #from elasticnodes import GraphWidget
 #from MyGraph import MyGraph
 from TestDrawWidget import DrawWidget
@@ -14,17 +15,7 @@ class MainWindow(QtGui.QMainWindow):
         QtCore.qsrand(QtCore.QTime(0,0,0).secsTo(QtCore.QTime.currentTime()))
         #self.graph = GraphWidget()
         self.mygraph = DrawWidget()
-        self.mygraph.addEdge("A", "B")
-        self.mygraph.addEdge("G","B")
-        self.mygraph.addEdge("C","D")
-        self.mygraph.addEdge("C","B")
-        self.mygraph.addEdge("D","A")
-        self.mygraph.addEdge("D","G")
-        self.mygraph.addEdge("A","C")
-        self.mygraph.addEdge("A","G")
-        self.mygraph.addEdge("G","A")
-        self.mygraph.addEdge("G","A")
-        self.mygraph.addEdge("G","A")
+
         #print type(self.mygraph)
         #print type(self.graph)
         #nodes = ['A','B','C','D','E','F','G']
@@ -56,6 +47,11 @@ class MainWindow(QtGui.QMainWindow):
         self.setStatusTip('Open GraphXml File')
         self.connect(self.openFileMenu,QtCore.SIGNAL('triggered()'),self.openFile)
 
+        self.saveFileMenu = QtGui.QAction(self.tr("&Save as"),self)
+        self.saveFileMenu.setShortcut('Ctrl+S')
+        self.setStatusTip('Save to GraphXml File')
+        self.connect(self.saveFileMenu,QtCore.SIGNAL('triggered()'),self.saveFile)
+
         self.exitMenu = QtGui.QAction(QtGui.QIcon('../images/close.png'),self.tr("&Exit"), self)
         self.exitMenu.setShortcut('Ctrl+Q')
         self.exitMenu.setStatusTip('Exit application')
@@ -81,7 +77,9 @@ class MainWindow(QtGui.QMainWindow):
     def createMenus(self):
         self.filemenu = self.menuBar().addMenu(self.tr("&File"))
         self.filemenu.addAction(self.openFileMenu)
+        self.filemenu.addAction(self.saveFileMenu)
         self.filemenu.addAction(self.exitMenu)
+
 
 
         self.graphmenu = self.menuBar().addMenu(self.tr("&Graph"))
@@ -131,7 +129,13 @@ class MainWindow(QtGui.QMainWindow):
             file.close()
             self.graphML(data)
     def saveFile(self):
-        pass
+        filename = QtGui.QFileDialog.getSaveFileName(self,
+                                                     'Save file',
+                                                     '.',
+                                                     'GraphML File(*.graphml *.xml)')
+        if filename != "":
+            graphML = GraphMLHelpr()
+            graphML.saveXML(filename,self.mygraph)
     def graphML(self,inputText):
         inputXML = minidom.parseString(inputText)
         nodes = inputXML.getElementsByTagName('node')
