@@ -175,6 +175,7 @@ class MaEdge(QtGui.QGraphicsItem):
 
 class DrawWidget(QtGui.QGraphicsView):
     scensSize = 400
+    drawSize  = 400
     def __init__(self):
         QtGui.QGraphicsView.__init__(self)
         self.scene = QtGui.QGraphicsScene(self)
@@ -187,10 +188,13 @@ class DrawWidget(QtGui.QGraphicsView):
         self.kownt = 0
     def addNode(self,node):
         if type(node) == str:
+            if self.hasNode(node):
+                print "Has node %s already"%(node)
+                return
             newitem = MaNode(self,node)
             self.graph[node] = []
             self.gNode[node] = newitem
-            newitem.setPos(random.randint(0,DrawWidget.scensSize),random.randint(0,DrawWidget.scensSize))
+            newitem.setPos(random.randint(0,DrawWidget.drawSize),random.randint(0,DrawWidget.drawSize))
             self.scene.addItem(newitem)
             self.kownt += 1
         elif type(node) == 'MaNode':
@@ -246,6 +250,17 @@ class DrawWidget(QtGui.QGraphicsView):
         return self.graph
     def getEdge(self,nodeName):
         return self.graph[nodeName]
+
+    def getEdges(self):
+        result = set()
+        for key in self.graph:
+            neighbors = self.graph[key]
+            for neighbor in neighbors:
+                #not have this edge before
+                if not (key,neighbor) or not (neighbor,key) in result:
+                    result.add((key,neighbor))
+        return result
+
     def getGEdges(self,nodeName):
         if nodeName in self.gEdge:
             return self.gEdge[nodeName]
@@ -258,6 +273,11 @@ class DrawWidget(QtGui.QGraphicsView):
                 return False
         else:
             return False
+    def hasNode(self,nodeName):
+        if nodeName in self.graph:
+            return True
+        return False
+
     def getAllGEdges(self):
         result = []
         for node in self.graph:
@@ -285,9 +305,15 @@ if __name__ == "__main__":
     #widget.addNode("A")
     widget.addEdge("G", "B")
     widget.addEdge("A","B")
+    widget.addEdge("A","G")
+    widget.addEdge("C","A")
+    widget.addEdge("C","B")
+    widget.addEdge("C","G")
     print "Graph toString",widget.toString()
     print "Get edge of A is",widget.getEdge("A")
     print "Get edge of B is",widget.getEdge("B")
     print "Nodes name",widget.getNodesName()
+    print "Hole graph",widget.getGraph()
+    print "All Edges",widget.getEdges()
     widget.show()
     sys.exit(app.exec_())
