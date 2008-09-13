@@ -127,7 +127,7 @@ class MainWindow(QtGui.QMainWindow):
             file=open(filename)
             data = file.read()
             file.close()
-            self.graphML(data)
+            self.graphMLAddGraph(data)
     def saveFile(self):
         filename = QtGui.QFileDialog.getSaveFileName(self,
                                                      'Save file',
@@ -136,8 +136,11 @@ class MainWindow(QtGui.QMainWindow):
         if filename != "":
             graphML = GraphMLHelpr()
             graphML.saveXML(filename,self.mygraph)
-    def graphML(self,inputText):
+    def graphMLAddGraph(self,inputText):
         inputXML = minidom.parseString(inputText)
+        del self.mygraph
+        self.mygraph = DrawWidget()
+        self.setCentralWidget(self.mygraph)
         nodes = inputXML.getElementsByTagName('node')
         edges = inputXML.getElementsByTagName('edge')
         for node in nodes:
