@@ -66,6 +66,12 @@ class MainWindow(QtGui.QMainWindow):
         self.addEdgeMenu.setShortcut('Ctrl+E')
         self.connect(self.addEdgeMenu,QtCore.SIGNAL("triggered()"),self.addEdge)
 
+        self.delNodeMenu = QtGui.QAction(self.tr("&Remove Node"),self)
+        self.connect(self.delNodeMenu,QtCore.SIGNAL("triggered()"),self.delNode)
+
+        self.delEdgeMenu = QtGui.QAction(self.tr("&Remove Edge"),self)
+        self.connect(self.delEdgeMenu,QtCore.SIGNAL("triggered()"),self.delEdge)
+
         self.aboutActMenu = QtGui.QAction(self.tr("&About"), self)
         self.aboutActMenu.setStatusTip(self.tr("Show the application's About box"))
         self.connect(self.aboutActMenu, QtCore.SIGNAL("triggered()"), self.about)
@@ -85,6 +91,8 @@ class MainWindow(QtGui.QMainWindow):
         self.graphmenu = self.menuBar().addMenu(self.tr("&Graph"))
         self.graphmenu.addAction(self.addNodeMenu)
         self.graphmenu.addAction(self.addEdgeMenu)
+        self.graphmenu.addAction(self.delNodeMenu)
+        self.graphmenu.addAction(self.delEdgeMenu)
 
         self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
         self.helpMenu.addAction(self.aboutActMenu)
@@ -120,6 +128,10 @@ class MainWindow(QtGui.QMainWindow):
         dest, ok2 = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter destination node name:')
         if ok1 and ok2:
             self.mygraph.addEdge(str(source), str(dest))
+    def delNode(self):
+        pass
+    def delEdge(self):
+        pass
     def openFile(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file',
                     '.',"XML File (*.xml *.graphML)")
