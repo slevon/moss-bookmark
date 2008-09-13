@@ -182,7 +182,7 @@ class DrawWidget(QtGui.QGraphicsView):
         self.scene.setSceneRect(-20,-20,DrawWidget.scensSize+20,DrawWidget.scensSize+20)#scene size 0-500
         self.setScene(self.scene)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
-        self.graph = {}
+        self.graph = {} #set of all nodes point to neightbor as edges in str information
         self.gNode = {}
         self.gEdge = {}
         self.kownt = 0
@@ -229,20 +229,26 @@ class DrawWidget(QtGui.QGraphicsView):
 
             #add to graphic widget
             newGEdge = MaEdge(self.gNode[source],self.gNode[dest])
-            if source in self.gEdge:
-                self.gEdge[source].append(newGEdge)
-            else:
-                self.gEdge[source] = [newGEdge]
-            if dest in self.gEdge:
-                self.gEdge[dest].append(newGEdge)
-            else:
-                self.gEdge[dest] = [newGEdge]
+            if not(source,dest) in self.gEdge \
+            or not(dest,source) in self.gEdge:
+                self.gEdge[(source,dest)] = newGEdge
             self.scene.addItem(newGEdge)
-        else:
-            pass
     def delNode(self,node):
-        pass
+        if node in self.graph:
+            self.scene.removeItem(self.gNode[node])
+            neightbors = self.graph[node]#get all edge point to it and del it of
+            for neightbor in neightbors:
+                self.delEdge(node, neightbor)
+                print "Del %s to %s"%(node,neightbor)
+            del self.graph[node]
     def delEdge(self,source,dest):
+        if (source,dest) in self.gEdge:
+            self.scene.removeItem(self.gEdge[(source,dest)])
+        elif  (dest,source) in self.gEdge:
+            self.scene.removeItem(self.gEdge[(dest,source)])
+        if dest in self.graph[source]:
+            self.graph[source].remove(dest)
+            self.graph[dest].remove(source)
         pass
 
     def toString(self):
@@ -258,8 +264,9 @@ class DrawWidget(QtGui.QGraphicsView):
     #def getGNode(self,name):
     def getGraph(self):
         return self.graph
-    def getEdge(self,nodeName):
-        return self.graph[nodeName]
+    def getEdgesOf(self,nodeName):
+        if nodeName in self.graph:
+            return self.graph[nodeName]
 
     def getEdges(self):
         result = set()
@@ -319,9 +326,10 @@ if __name__ == "__main__":
     widget.addEdge("C","A")
     widget.addEdge("C","B")
     widget.addEdge("C","G")
+    widget.delNode("A")
     print "Graph toString",widget.toString()
-    print "Get edge of A is",widget.getEdge("A")
-    print "Get edge of B is",widget.getEdge("B")
+    print "Get edge of A is",widget.getEdgesOf("A")
+    print "Get edge of B is",widget.getEdgesOf("B")
     print "Nodes name",widget.getNodesName()
     print "Hole graph",widget.getGraph()
     print "All Edges",widget.getEdges()
