@@ -191,6 +191,9 @@ class DrawWidget(QtGui.QGraphicsView):
             if self.hasNode(node):
                 print "Has node %s already"%(node)
                 return
+            if node == "":
+                print "Empty name add node"
+                return
             newitem = MaNode(self,node)
             self.graph[node] = []
             self.gNode[node] = newitem
@@ -208,6 +211,9 @@ class DrawWidget(QtGui.QGraphicsView):
             return
         if (type(source) == str) and (type(dest) == str):
             #add to graph skeleton
+            if source == "" or dest == "":
+                print "Empty name add edge"
+                return
             if source in self.graph:
                 self.graph[source].append(dest)
             else:#create new node
