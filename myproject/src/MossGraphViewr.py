@@ -140,6 +140,7 @@ class MainWindow(QtGui.QMainWindow):
             data = file.read()
             file.close()
             self.graphMLAddGraph(data)
+
     def saveFile(self):
         filename = QtGui.QFileDialog.getSaveFileName(self,
                                                      'Save file',
@@ -159,6 +160,7 @@ class MainWindow(QtGui.QMainWindow):
             self.mygraph.addNode(str(node.attributes['id'].value))
         for edge in edges:
             self.mygraph.addEdge(str(edge.attributes['source'].value),str(edge.attributes['target'].value))
+        print self.mygraph.toString()
 
 '''Dummy function for test create graph'''
 #if this is main module do this
