@@ -234,6 +234,10 @@ class DrawWidget(QtGui.QGraphicsView):
             self.scene.addItem(newGEdge)
         else:
             pass
+    def delNode(self,node):
+        pass
+    def delEdge(self,source,dest):
+        pass
 
     def toString(self):
         result = ""
