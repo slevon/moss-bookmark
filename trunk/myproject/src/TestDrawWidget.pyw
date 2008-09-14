@@ -3,10 +3,13 @@ from PyQt4 import QtGui,QtCore
 import sys
 import random
 import math
+from mylib import SimpleAlgorithm
 class MaNode(QtGui.QGraphicsItem):
     Type     = QtGui.QGraphicsItem.UserType+1
     NHigh    = 30
     NWigth   = 30
+    Highlight = 0
+    Unhighlight = 1
     def __init__(self,graphWidget,name):
         QtGui.QGraphicsItem.__init__(self)
         #self.drawWidget = drawWidget
@@ -15,6 +18,7 @@ class MaNode(QtGui.QGraphicsItem):
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
         self.setZValue(1)#node is alway on top over the edge
         self.name = name
+        self.paintStatus = MaNode.Unhighlight
     def type(self):
         return MaNode.Type
     def setName(self,name):
@@ -34,16 +38,25 @@ class MaNode(QtGui.QGraphicsItem):
                                           MaNode.NWigth)
         #if select highlight node
         if option.state & QtGui.QStyle.State_Sunken:
+
             grandient.setCenter((MaNode.NWigth/3),
                                 (MaNode.NHigh/3))
             grandient.setFocalPoint((MaNode.NWigth/3),
                                 (MaNode.NHigh/3))
-            grandient.setColorAt(1,QtGui.QColor(QtCore.Qt.yellow).light(120))
-            grandient.setColorAt(0,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
+            if self.paintStatus == MaNode.Highlight:
+                grandient.setColorAt(0,QtGui.QColor(QtCore.Qt.blue).light(200))
+                grandient.setColorAt(1,QtGui.QColor(QtCore.Qt.darkBlue).light(200))
+            else:
+                grandient.setColorAt(0,QtGui.QColor(QtCore.Qt.yellow).light(120))
+                grandient.setColorAt(1,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
 
         else:
-            grandient.setColorAt(1,QtGui.QColor(QtCore.Qt.yellow).light(120))
-            grandient.setColorAt(0,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
+            if self.paintStatus == MaNode.Highlight:
+                grandient.setColorAt(1,QtGui.QColor(QtCore.Qt.blue).light(200))
+                grandient.setColorAt(0,QtGui.QColor(QtCore.Qt.darkBlue).light(200))
+            else:
+                grandient.setColorAt(1,QtGui.QColor(QtCore.Qt.yellow).light(120))
+                grandient.setColorAt(0,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
 
         #painter.setBrush(QtCore.Qt.yellow)
         painter.setBrush(QtGui.QBrush(grandient))
@@ -258,7 +271,11 @@ class DrawWidget(QtGui.QGraphicsView):
             self.graph[source].remove(dest)
             self.graph[dest].remove(source)
         pass
-
+    def highLightNode(self,nodeName):
+        self.gNode[nodeName]
+        pass
+    def highLightEdge(self,source,dest):
+        pass
     def toString(self):
         result = ""
         for node in self.graph:
@@ -334,11 +351,18 @@ if __name__ == "__main__":
     widget.addNode("B")
     #widget.addNode("A")
     widget.addEdge("G", "B")
+    widget.addEdge("Z","A")
+    widget.addEdge("Z","B")
     widget.addEdge("A","B")
     widget.addEdge("A","G")
     widget.addEdge("C","A")
     widget.addEdge("C","B")
     widget.addEdge("C","G")
+    highestList,highestValue = SimpleAlgorithm.highestDegreeNode(widget.getGraph())
+    print "Highest degree node list",highestList
+    print "Max at",highestValue
+    for resultNode in highestList:
+        widget.gNode[resultNode].paintStatus = MaNode.Highlight
     #widget.delEdge("A","B")
     print "Graph toString",widget.toString()
     print "Get edge of A is",widget.getEdgesOf("A")
