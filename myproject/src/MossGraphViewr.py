@@ -2,6 +2,8 @@ import sys
 from PyQt4 import QtCore, QtGui
 from xml.dom import minidom
 from GraphMLHelpr import GraphMLHelpr
+from mylib import SimpleAlgorithm
+from  TestDrawWidget import MaNode
 #from elasticnodes import GraphWidget
 #from MyGraph import MyGraph
 from TestDrawWidget import DrawWidget
@@ -185,7 +187,9 @@ class MainWindow(QtGui.QMainWindow):
             self.mygraph.addEdge(str(edge.attributes['source'].value),str(edge.attributes['target'].value))
         print self.mygraph.toString()
     def highestDegreeNode(self):
-        pass
+        highestList,highestDegree = SimpleAlgorithm.highestDegreeNode(self.mygraph.getGraph())
+        for node in highestList:
+            self.mygraph.gNode[node].paintStatus = MaNode.Highlight
     def simpleLayout(self):
         pass
 '''Dummy function for test create graph'''
