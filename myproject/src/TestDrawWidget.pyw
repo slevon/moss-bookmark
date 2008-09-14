@@ -64,7 +64,7 @@ class MaNode(QtGui.QGraphicsItem):
     #move edge follow node when node move
     def itemChange(self,change,value):
         if change == QtGui.QGraphicsItem.ItemPositionChange:
-            gEdges = self.graph.getGEdges(self.name)
+            gEdges = self.graph.getGEdgesOf(self.name)
             for gEdge in gEdges:
                 gEdge.adjust()
         return QtGui.QGraphicsItem.itemChange(self,change,value)
@@ -74,7 +74,7 @@ class MaNode(QtGui.QGraphicsItem):
     def mouseReleaseEvent(self,event):
         self.update()
         #update edge
-        gEdges = self.graph.getGEdges(self.name)
+        gEdges = self.graph.getGEdgesOf(self.name)
         for gEdge in gEdges:
             gEdge.adjust()
         QtGui.QGraphicsItem.mouseReleaseEvent(self, event)
@@ -237,10 +237,18 @@ class DrawWidget(QtGui.QGraphicsView):
         if node in self.graph:
             self.scene.removeItem(self.gNode[node])
             neightbors = self.graph[node]#get all edge point to it and del it of
+            print "Edges of",node,self.graph[node]
             for neightbor in neightbors:
-                self.delEdge(node, neightbor)
+                if (node,neightbor) in self.gEdge:
+                    self.scene.removeItem(self.gEdge[(node,neightbor)])
+
+                elif  (neightbor,node) in self.gEdge:
+                    self.scene.removeItem(self.gEdge[(neightbor,node)])
                 print "Del %s to %s"%(node,neightbor)
+                self.graph[neightbor].remove(node)
+            del self.gNode[node]
             del self.graph[node]
+
     def delEdge(self,source,dest):
         if (source,dest) in self.gEdge:
             self.scene.removeItem(self.gEdge[(source,dest)])
@@ -278,10 +286,15 @@ class DrawWidget(QtGui.QGraphicsView):
                     result.add((key,neighbor))
         return result
 
-    def getGEdges(self,nodeName):
-        if nodeName in self.gEdge:
-            return self.gEdge[nodeName]
-        return []
+    def getGEdgesOf(self,nodeName):
+        edgesName = self.graph[nodeName]
+        gEdges    = []
+        for edgeName in edgesName:
+            if (nodeName,edgeName) in self.gEdge:
+                gEdges.append(self.gEdge[(nodeName,edgeName)])
+            elif (edgeName,nodeName) in self.gEdge:
+                gEdges.append(self.gEdge[(edgeName,nodeName)])
+        return gEdges
     def hasEdge(self,source,dest):
         if source in self.graph and dest in self.graph:
             if source in self.graph[dest]:
@@ -326,7 +339,7 @@ if __name__ == "__main__":
     widget.addEdge("C","A")
     widget.addEdge("C","B")
     widget.addEdge("C","G")
-    widget.delNode("A")
+    #widget.delEdge("A","B")
     print "Graph toString",widget.toString()
     print "Get edge of A is",widget.getEdgesOf("A")
     print "Get edge of B is",widget.getEdgesOf("B")

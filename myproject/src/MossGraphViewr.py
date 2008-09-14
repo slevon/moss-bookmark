@@ -129,9 +129,14 @@ class MainWindow(QtGui.QMainWindow):
         if ok1 and ok2:
             self.mygraph.addEdge(str(source), str(dest))
     def delNode(self):
-        pass
+        nodeName, ok = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter node name:')
+        if ok:
+            self.mygraph.delNode(str(nodeName)) #case to str because output of Qt is Qt String
     def delEdge(self):
-        pass
+        source, ok1 = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter source node name:')
+        dest, ok2 = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter destination node name:')
+        if ok1 and ok2:
+            self.mygraph.delEdge(str(source), str(dest))
     def openFile(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file',
                     '.',"XML File (*.xml *.graphML)")
