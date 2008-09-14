@@ -42,6 +42,7 @@ class MainWindow(QtGui.QMainWindow):
         self.statusBar().showMessage('Not ready')
 
     def createActions(self):
+        #file{
         self.openFileMenu = QtGui.QAction(self.tr("&Open file"),self)
         self.openFileMenu.setShortcut('Ctrl+O')
         self.setStatusTip('Open GraphXml File')
@@ -57,7 +58,8 @@ class MainWindow(QtGui.QMainWindow):
         self.exitMenu.setStatusTip('Exit application')
         self.connect(self.exitMenu,QtCore.SIGNAL('triggered()'),
                      QtGui.qApp,QtCore.SLOT('quit()'))
-
+        #}file
+        #graph{
         self.addNodeMenu = QtGui.QAction(self.tr("&Add New Node"),self)
         self.addNodeMenu.setShortcut('Ctrl+N')
         self.connect(self.addNodeMenu,QtCore.SIGNAL("triggered()"),self.addNode)
@@ -71,7 +73,18 @@ class MainWindow(QtGui.QMainWindow):
 
         self.delEdgeMenu = QtGui.QAction(self.tr("&Remove Edge"),self)
         self.connect(self.delEdgeMenu,QtCore.SIGNAL("triggered()"),self.delEdge)
-
+        #}graph
+        #algorithm{
+        self.highestDegreeNodeMenu = QtGui.QAction(self.tr("&Highest degree node"),self)
+        self.connect(self.highestDegreeNodeMenu,QtCore.SIGNAL("triggered()")
+                     ,self.highestDegreeNode)
+        #}algorithm
+        #layout{
+        self.simpleLayoutMenu = QtGui.QAction(self.tr("&Simple layout"),self)
+        self.connect(self.simpleLayoutMenu,QtCore.SIGNAL("triggered()")
+                     ,self.simpleLayout)
+        #}layout
+        #help{
         self.aboutActMenu = QtGui.QAction(self.tr("&About"), self)
         self.aboutActMenu.setStatusTip(self.tr("Show the application's About box"))
         self.connect(self.aboutActMenu, QtCore.SIGNAL("triggered()"), self.about)
@@ -79,6 +92,7 @@ class MainWindow(QtGui.QMainWindow):
         self.aboutQtActMenu = QtGui.QAction(self.tr("About &Qt"), self)
         self.aboutQtActMenu.setStatusTip(self.tr("Show the Qt library's About box"))
         self.connect(self.aboutQtActMenu, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT("aboutQt()"))
+        #}help
 
     def createMenus(self):
         self.filemenu = self.menuBar().addMenu(self.tr("&File"))
@@ -86,13 +100,17 @@ class MainWindow(QtGui.QMainWindow):
         self.filemenu.addAction(self.saveFileMenu)
         self.filemenu.addAction(self.exitMenu)
 
-
-
         self.graphmenu = self.menuBar().addMenu(self.tr("&Graph"))
         self.graphmenu.addAction(self.addNodeMenu)
         self.graphmenu.addAction(self.addEdgeMenu)
         self.graphmenu.addAction(self.delNodeMenu)
         self.graphmenu.addAction(self.delEdgeMenu)
+
+        self.algoMenu = self.menuBar().addMenu(self.tr("&Algorithm"))
+        self.algoMenu.addAction(self.highestDegreeNodeMenu)
+
+        self.layoutMenu = self.menuBar().addMenu(self.tr("&Layout"))
+        self.layoutMenu.addAction(self.simpleLayoutMenu)
 
         self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
         self.helpMenu.addAction(self.aboutActMenu)
@@ -166,7 +184,10 @@ class MainWindow(QtGui.QMainWindow):
         for edge in edges:
             self.mygraph.addEdge(str(edge.attributes['source'].value),str(edge.attributes['target'].value))
         print self.mygraph.toString()
-
+    def highestDegreeNode(self):
+        pass
+    def simpleLayout(self):
+        pass
 '''Dummy function for test create graph'''
 #if this is main module do this
 if __name__ == "__main__":
