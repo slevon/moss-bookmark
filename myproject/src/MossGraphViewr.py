@@ -190,6 +190,8 @@ class MainWindow(QtGui.QMainWindow):
         highestList,highestDegree = SimpleAlgorithm.highestDegreeNode(self.mygraph.getGraph())
         for node in highestList:
             self.mygraph.gNode[node].paintStatus = MaNode.Highlight
+            self.mygraph.hide()
+            self.mygraph.show()
     def simpleLayout(self):
         pass
 '''Dummy function for test create graph'''

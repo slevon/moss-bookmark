@@ -8,8 +8,13 @@ class MaNode(QtGui.QGraphicsItem):
     Type     = QtGui.QGraphicsItem.UserType+1
     NHigh    = 30
     NWigth   = 30
-    Highlight = 0
-    Unhighlight = 1
+    Unhighlight = 0
+    Highlight = 1
+    HLC = 0 #HighLight and mouse Click
+    HLN = 1 #HighLight and No mouse click
+    ULC = 2 #UnhighLight and mouse Click
+    ULN = 3 #UnhighLinht and No mouse click
+
     def __init__(self,graphWidget,name):
         QtGui.QGraphicsItem.__init__(self)
         #self.drawWidget = drawWidget
@@ -25,6 +30,28 @@ class MaNode(QtGui.QGraphicsItem):
         self.name = name
     def getName(self):
         return self.name
+    def getBGStyle(self,gNodeType):
+        penstyle = QtGui.QRadialGradient(-(MaNode.NWigth/5),
+                                          -(MaNode.NHigh/5),
+                                          MaNode.NWigth)
+        penstyle.setCenter((MaNode.NWigth/3),
+                                    (MaNode.NHigh/3))
+        penstyle.setFocalPoint((MaNode.NWigth/3),
+                                    (MaNode.NHigh/3))
+        if gNodeType == MaNode.HLC:
+            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.blue).light(200))
+            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.darkBlue).light(200))
+        elif gNodeType == MaNode.ULC:
+            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.yellow).light(120))
+            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
+        elif gNodeType == MaNode.HLN:
+            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.blue).light(200))
+            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.darkBlue).light(200))
+        elif gNodeType == MaNode.ULN:
+            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.yellow).light(120))
+            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
+        return penstyle
+
     def shape(self):
         path = QtGui.QPainterPath()
         path.addEllipse(-(MaNode.NWigth/2),
@@ -33,33 +60,18 @@ class MaNode(QtGui.QGraphicsItem):
                             MaNode.NHigh) #match with Ellipse draw x y w h
         return path
     def paint(self,painter,option,widget):
-        grandient = QtGui.QRadialGradient(-(MaNode.NWigth/5),
-                                          -(MaNode.NHigh/5),
-                                          MaNode.NWigth)
         #if select highlight node
         if option.state & QtGui.QStyle.State_Sunken:
-
-            grandient.setCenter((MaNode.NWigth/3),
-                                (MaNode.NHigh/3))
-            grandient.setFocalPoint((MaNode.NWigth/3),
-                                (MaNode.NHigh/3))
             if self.paintStatus == MaNode.Highlight:
-                grandient.setColorAt(0,QtGui.QColor(QtCore.Qt.blue).light(200))
-                grandient.setColorAt(1,QtGui.QColor(QtCore.Qt.darkBlue).light(200))
+                painter.setBrush(self.getBGStyle(MaNode.HLC))
             else:
-                grandient.setColorAt(0,QtGui.QColor(QtCore.Qt.yellow).light(120))
-                grandient.setColorAt(1,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
-
+                painter.setBrush(self.getBGStyle(MaNode.ULC))
         else:
             if self.paintStatus == MaNode.Highlight:
-                grandient.setColorAt(1,QtGui.QColor(QtCore.Qt.blue).light(200))
-                grandient.setColorAt(0,QtGui.QColor(QtCore.Qt.darkBlue).light(200))
+                painter.setBrush(self.getBGStyle(MaNode.HLN))
             else:
-                grandient.setColorAt(1,QtGui.QColor(QtCore.Qt.yellow).light(120))
-                grandient.setColorAt(0,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
-
+                painter.setBrush(self.getBGStyle(MaNode.ULN))
         #painter.setBrush(QtCore.Qt.yellow)
-        painter.setBrush(QtGui.QBrush(grandient))
         painter.setPen(QtGui.QPen(QtCore.Qt.black,0))
         painter.drawEllipse(-(MaNode.NWigth/2),
                             -(MaNode.NHigh/2),
