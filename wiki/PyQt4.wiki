@@ -1,4 +1,4 @@
-#summary library ของ Python ที่ใช้ในการสร้าง Qt applicatio
+#summary library ของ Python ที่ใช้ในการสร้าง Qt application
 #labels Phase-Support
 
 = Introduction =
