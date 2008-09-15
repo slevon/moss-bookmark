@@ -8,13 +8,13 @@ Moss Graph viewr Qt runtime.
 
 = Details =
 
-This application need python runtime and pyqt4
+This application need python runtime and PyQt4
 
 *Windows*
- # install python-2.5.2.msi
-  {{{http://www.python.org/download/}}}
- # install PyQt-Py2.5-gpl-4.4.3-1.exe
-  {{{http://www.riverbankcomputing.co.uk/software/pyqt/download}}}
+ # install `python-2.5.2.msi`
+  [http://www.python.org/download/ http://www.python.org/download/]
+ # install `PyQt-Py2.5-gpl-4.4.3-1.exe`
+  [http://www.riverbankcomputing.co.uk/software/pyqt/download http://www.riverbankcomputing.co.uk/software/pyqt/download]
 *Linux*
  # install python 2.5 and PyQt4 on your destribution.
 
