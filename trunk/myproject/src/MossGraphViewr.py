@@ -188,6 +188,8 @@ class MainWindow(QtGui.QMainWindow):
         print self.mygraph.toString()
     def highestDegreeNode(self):
         highestList,highestDegree = SimpleAlgorithm.highestDegreeNode(self.mygraph.getGraph())
+        for node in self.mygraph.gNode:
+            self.mygraph.gNode[node].paintStatus = MaNode.Unhighlight
         for node in highestList:
             self.mygraph.gNode[node].paintStatus = MaNode.Highlight
             self.mygraph.hide()

@@ -31,25 +31,30 @@ class MaNode(QtGui.QGraphicsItem):
     def getName(self):
         return self.name
     def getBGStyle(self,gNodeType):
-        penstyle = QtGui.QRadialGradient(-(MaNode.NWigth/5),
-                                          -(MaNode.NHigh/5),
+        penstyle = QtGui.QRadialGradient(-(MaNode.NWigth*(3/10)),
+                                          -(MaNode.NHigh*(3/10)),
                                           MaNode.NWigth)
-        penstyle.setCenter((MaNode.NWigth/3),
-                                    (MaNode.NHigh/3))
-        penstyle.setFocalPoint((MaNode.NWigth/3),
-                                    (MaNode.NHigh/3))
+
         if gNodeType == MaNode.HLC:
-            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.blue).light(200))
+            penstyle.setCenter((MaNode.NWigth*(3/10)),
+                                    (MaNode.NHigh*(3/10)))
+            penstyle.setFocalPoint((MaNode.NWigth*(3/10)),
+                                    (MaNode.NHigh*(3/10)))
+            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.blue).light(150))
             penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.darkBlue).light(200))
         elif gNodeType == MaNode.ULC:
+            penstyle.setCenter((MaNode.NWigth*(3/10)),
+                                    (MaNode.NHigh*(3/10)))
+            penstyle.setFocalPoint((MaNode.NWigth*(3/10)),
+                                    (MaNode.NHigh*(3/10)))
             penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.yellow).light(120))
             penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
         elif gNodeType == MaNode.HLN:
-            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.blue).light(200))
-            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.darkBlue).light(200))
+            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.blue).light(150))
+            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.darkBlue).light(170))
         elif gNodeType == MaNode.ULN:
-            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.yellow).light(120))
-            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
+            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.yellow))
+            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.darkYellow).light(150))
         return penstyle
 
     def shape(self):
@@ -208,6 +213,7 @@ class DrawWidget(QtGui.QGraphicsView):
         self.setScene(self.scene)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.graph = {} #set of all nodes point to neightbor as edges in str information
+        self.gGraph = {} #set of all nodes point to gEdge
         self.gNode = {}
         self.gEdge = {}
         self.kownt = 0
@@ -221,6 +227,7 @@ class DrawWidget(QtGui.QGraphicsView):
                 return
             newitem = MaNode(self,node)
             self.graph[node] = []
+            self.gGraph[node] = []
             self.gNode[node] = newitem
             newitem.setPos(random.randint(0,DrawWidget.drawSize),random.randint(0,DrawWidget.drawSize))
             self.scene.addItem(newitem)
@@ -235,25 +242,30 @@ class DrawWidget(QtGui.QGraphicsView):
             print "Has edge",source,'<==>',dest,'already'
             return
         if (type(source) == str) and (type(dest) == str):
+            newGEdge = MaEdge(self.gNode[source],self.gNode[dest])
             #add to graph skeleton
             if source == "" or dest == "":
                 print "Empty name add edge"
                 return
             if source in self.graph:
                 self.graph[source].append(dest)
+                self.gGraph[source].append(newGEdge)
             else:#create new node
                 self.addNode(source)
                 self.graph[source] =[dest]
+                self.gGraph[source] = [newGEdge]
 
 
             if dest in self.graph:
                 self.graph[dest].append(source)
+                self.gGraph[dest].append(newGEdge)
             else:#create new node
                 self.addNode(dest)
                 self.graph[dest] = [source]
+                self.gGraph[dest] = [newGEdge]
 
             #add to graphic widget
-            newGEdge = MaEdge(self.gNode[source],self.gNode[dest])
+
             if not(source,dest) in self.gEdge \
             or not(dest,source) in self.gEdge:
                 self.gEdge[(source,dest)] = newGEdge
@@ -316,14 +328,7 @@ class DrawWidget(QtGui.QGraphicsView):
         return result
 
     def getGEdgesOf(self,nodeName):
-        edgesName = self.graph[nodeName]
-        gEdges    = []
-        for edgeName in edgesName:
-            if (nodeName,edgeName) in self.gEdge:
-                gEdges.append(self.gEdge[(nodeName,edgeName)])
-            elif (edgeName,nodeName) in self.gEdge:
-                gEdges.append(self.gEdge[(edgeName,nodeName)])
-        return gEdges
+        return self.gGraph[nodeName]
     def hasEdge(self,source,dest):
         if source in self.graph and dest in self.graph:
             if source in self.graph[dest]:
