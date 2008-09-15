@@ -1,0 +1,38 @@
+#summary One-sentence summary of this page.
+#labels Phase-Deploy,Phase-Support
+
+= Introduction =
+README
+Moss Graph viewr Qt runtime.
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
+
+
+This application need python runtime and pyqt4
+
+#Windows
+1. install python-2.5.2.msi
+	http://www.python.org/download/
+2. install PyQt-Py2.5-gpl-4.4.3-1.exe
+	http://www.riverbankcomputing.co.uk/software/pyqt/download
+#Linux
+1. install python 2.5 and PyQt4 on your destribution.
+
+#Mac
+1. Download and install packages python lastest version at
+for Mac OS X 10.3.9 or 10.4
+	http://www.python.org/download/mac/
+for Mac OS X 10.3(Panther)
+	http://prdownloads.sourceforge.net/tcltkaqua/TclTkAqua-8.4.10.dmg?download
+	or other vesion at
+	http://www.python.org/ftp/python/2.4.3/Universal-MacPython-2.4.3-2006-04-07.dmg
+2. install SIP for build PyQt4
+	http://www.riverbankcomputing.co.uk/software/sip/download
+3. build PyQt4 using SIP
+	http://www.riverbankcomputing.co.uk/software/pyqt/download
