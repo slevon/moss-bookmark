@@ -17,10 +17,10 @@ Add your content here.  Format your content with:
 This application need python runtime and pyqt4
 
 *Windows*
-	 1. install python-2.5.2.msi
+	1. install python-2.5.2.msi
 	http://www.python.org/download/
 	
-	 2. install PyQt-Py2.5-gpl-4.4.3-1.exe
+	2. install PyQt-Py2.5-gpl-4.4.3-1.exe
 	http://www.riverbankcomputing.co.uk/software/pyqt/download
 *Linux*
 	1. install python 2.5 and PyQt4 on your destribution.
