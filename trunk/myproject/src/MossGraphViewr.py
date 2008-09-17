@@ -1,43 +1,29 @@
 import sys
 import psyco
-import config
 import imp
+
+from mylib.HighestDegreeNode import HighestDegreeNode
+from mylib.LeafNode import LeafNode
+from mylib.GraphMLHelpr import GraphMLHelpr
+
+from TestDrawWidget import MaNode
+from TestDrawWidget import DrawWidget
+
 from PyQt4 import QtCore, QtGui
 from xml.dom import minidom
-from GraphMLHelpr import GraphMLHelpr
-from  TestDrawWidget import MaNode
-from TestDrawWidget import DrawWidget
+
+
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         QtGui.QMainWindow.__init__(self)
         self.pluginsLayout = []
         self.pluginsAlgo   = {} #pluginName -> plugin Class
-        self.loadPluginsAlgorithm()
         self.createActions()
         self.createMenus()
         self.resize(500,500)
         #test addWidget area
-        QtCore.qsrand(QtCore.QTime(0,0,0).secsTo(QtCore.QTime.currentTime()))
-        #self.graph = GraphWidget()
         self.mygraph = DrawWidget()
-
-        #print type(self.mygraph)
-        #print type(self.graph)
-        #nodes = ['A','B','C','D','E','F','G']
-        #for node in nodes:
-        #    self.graph.addNode(node)
-        #for i in range(len(nodes)):
-        #    if i < len(nodes)-1:
-        #        self.graph.addEdge(nodes[i],nodes[i+1])
-        #    else:
-        #        self.graph.addEdge(nodes[0],nodes[6])
-        #self.graph.addEdge('A','E')
-        #self.graph.addEdge('A','D')
-
-        #print type(self.graph)
-
-        #self.gwidget = GraphWidget()
 
         #set icon of the application
         self.setWindowIcon(QtGui.QIcon('../images/app_icon.png'))
@@ -81,12 +67,10 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.delEdgeMenu,QtCore.SIGNAL("triggered()"),self.delEdge)
         #}graph
         #algorithm{
-        '''
-        for plugin in self.pluginsAlgo:
-            self.pluginsAlgoMenu[plugin.getName()] = QtGui.QAction(self.tr("&Highest degree node"),self)
-            self.connect(self.pluginsAlgoMenu[plugin.getName()],QtCore.SIGNAL("triggered()")
-                     ,self.highestDegreeNode)
-        '''
+        self.highestDegreeMenu = QtGui.QAction(self.tr("&Highest Degree Node"),self)
+        self.connect(self.highestDegreeMenu,QtCore.SIGNAL("triggered()")
+                 ,self.highestDegree)
+
 
         #}algorithm
         #layout{
@@ -117,32 +101,14 @@ class MainWindow(QtGui.QMainWindow):
         self.graphmenu.addAction(self.delEdgeMenu)
 
         self.algoMenu = self.menuBar().addMenu(self.tr("&Algorithm"))
-        self.pluginsAlgoMenu = {}
-        '''
-        for plugin in self.pluginsAlgo:
-            self.pluginsAlgoMenu[plugin.getName()] = ''
-            self.algoMenu.addAction(self.pluginsAlgoMenu[plugin.getName()])
-        '''
+        self.algoMenu.addAction(self.highestDegreeMenu)
+
         self.layoutMenu = self.menuBar().addMenu(self.tr("&Layout"))
         self.layoutMenu.addAction(self.simpleLayoutMenu)
 
         self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
         self.helpMenu.addAction(self.aboutActMenu)
         self.helpMenu.addAction(self.aboutQtActMenu)
-    def loadPluginsAlgorithm(self):
-        algolibs = config.plug_ins_algorithm
-        for algolib in algolibs:
-            # find module file from specific directory
-            Directory,PluginFilename, PluginClassName = algolib.split('.')
-            file, filename, description = imp.find_module( PluginFilename, ['./mylib/'])
-
-            # load module
-            pluginmodule = imp.load_module(PluginFilename, file, filename, description)
-
-            pluginClass = getattr(pluginmodule, PluginClassName)
-            self.pluginsAlgo[pluginClass().getName()]= pluginClass()
-        for plugin in self.pluginsAlgo:
-            print "load",plugin
 
     def setCenterScreen(self):
         screen = QtGui.QDesktopWidget().screenGeometry()
@@ -212,14 +178,17 @@ class MainWindow(QtGui.QMainWindow):
         for edge in edges:
             self.mygraph.addEdge(str(edge.attributes['source'].value),str(edge.attributes['target'].value))
         print self.mygraph.toString()
-    def highestDegreeNode(self):
-        highestList,highestDegree = SimpleAlgorithm.highestDegreeNode(self.mygraph.getGraph())
+    def highestDegree(self):
+        highestList = HighestDegreeNode().getResult(self.mygraph.getGraph())
+        #clear old status
         for node in self.mygraph.gNode:
             self.mygraph.gNode[node].paintStatus = MaNode.Unhighlight
+        #set new status
         for node in highestList:
             self.mygraph.gNode[node].paintStatus = MaNode.Highlight
             self.mygraph.hide()
             self.mygraph.show()
+
     def simpleLayout(self):
         pass
 '''Dummy function for test create graph'''
