@@ -1,15 +1,19 @@
 import sys
+import psyco
+import config
+import imp
 from PyQt4 import QtCore, QtGui
 from xml.dom import minidom
 from GraphMLHelpr import GraphMLHelpr
-from mylib import SimpleAlgorithm
 from  TestDrawWidget import MaNode
-#from elasticnodes import GraphWidget
-#from MyGraph import MyGraph
 from TestDrawWidget import DrawWidget
+
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         QtGui.QMainWindow.__init__(self)
+        self.pluginsLayout = []
+        self.pluginsAlgo   = {} #pluginName -> plugin Class
+        self.loadPluginsAlgorithm()
         self.createActions()
         self.createMenus()
         self.resize(500,500)
@@ -77,9 +81,13 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.delEdgeMenu,QtCore.SIGNAL("triggered()"),self.delEdge)
         #}graph
         #algorithm{
-        self.highestDegreeNodeMenu = QtGui.QAction(self.tr("&Highest degree node"),self)
-        self.connect(self.highestDegreeNodeMenu,QtCore.SIGNAL("triggered()")
+        '''
+        for plugin in self.pluginsAlgo:
+            self.pluginsAlgoMenu[plugin.getName()] = QtGui.QAction(self.tr("&Highest degree node"),self)
+            self.connect(self.pluginsAlgoMenu[plugin.getName()],QtCore.SIGNAL("triggered()")
                      ,self.highestDegreeNode)
+        '''
+
         #}algorithm
         #layout{
         self.simpleLayoutMenu = QtGui.QAction(self.tr("&Simple layout"),self)
@@ -109,14 +117,32 @@ class MainWindow(QtGui.QMainWindow):
         self.graphmenu.addAction(self.delEdgeMenu)
 
         self.algoMenu = self.menuBar().addMenu(self.tr("&Algorithm"))
-        self.algoMenu.addAction(self.highestDegreeNodeMenu)
-
+        self.pluginsAlgoMenu = {}
+        '''
+        for plugin in self.pluginsAlgo:
+            self.pluginsAlgoMenu[plugin.getName()] = ''
+            self.algoMenu.addAction(self.pluginsAlgoMenu[plugin.getName()])
+        '''
         self.layoutMenu = self.menuBar().addMenu(self.tr("&Layout"))
         self.layoutMenu.addAction(self.simpleLayoutMenu)
 
         self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
         self.helpMenu.addAction(self.aboutActMenu)
         self.helpMenu.addAction(self.aboutQtActMenu)
+    def loadPluginsAlgorithm(self):
+        algolibs = config.plug_ins_algorithm
+        for algolib in algolibs:
+            # find module file from specific directory
+            Directory,PluginFilename, PluginClassName = algolib.split('.')
+            file, filename, description = imp.find_module( PluginFilename, ['./mylib/'])
+
+            # load module
+            pluginmodule = imp.load_module(PluginFilename, file, filename, description)
+
+            pluginClass = getattr(pluginmodule, PluginClassName)
+            self.pluginsAlgo[pluginClass().getName()]= pluginClass()
+        for plugin in self.pluginsAlgo:
+            print "load",plugin
 
     def setCenterScreen(self):
         screen = QtGui.QDesktopWidget().screenGeometry()
@@ -199,6 +225,7 @@ class MainWindow(QtGui.QMainWindow):
 '''Dummy function for test create graph'''
 #if this is main module do this
 if __name__ == "__main__":
+    psyco.full()
     #Create Object application need for Qt apps
     app = QtGui.QApplication(sys.argv)
     #Create main window
