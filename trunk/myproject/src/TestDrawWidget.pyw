@@ -3,7 +3,6 @@ from PyQt4 import QtGui,QtCore
 import sys
 import random
 import math
-from mylib import SimpleAlgorithm
 class MaNode(QtGui.QGraphicsItem):
     Type     = QtGui.QGraphicsItem.UserType+1
     NHigh    = 30
