@@ -110,7 +110,8 @@ class MaNode(QtGui.QGraphicsItem):
 class MaEdge(QtGui.QGraphicsItem):
     Pi = math.pi
     TwoPi = 2.0 * Pi
-
+    Unhighlight = 0
+    Highlight = 1
     Type = QtGui.QGraphicsItem.UserType + 2
 
     def __init__(self, sourceNode, destNode):
@@ -122,7 +123,7 @@ class MaEdge(QtGui.QGraphicsItem):
         self.setZValue(0)#edge is alway on below the node
         self.source = sourceNode
         self.dest = destNode
-
+        self.paintStatus = MaEdge.Unhighlight
         self.source.addGEdge(self)
         self.dest.addGEdge(self)
         self.adjust()
@@ -180,8 +181,10 @@ class MaEdge(QtGui.QGraphicsItem):
 
         if line.length() == 0.0:
             return
-
-        painter.setPen(QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+        if self.paintStatus == MaEdge.Highlight:
+            painter.setPen(QtGui.QPen(QtCore.Qt.red, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+        else:
+            painter.setPen(QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
         painter.drawLine(line)
 
         # Draw the arrows if there's enough room.
@@ -294,11 +297,6 @@ class DrawWidget(QtGui.QGraphicsView):
             self.graph[source].remove(dest)
             self.graph[dest].remove(source)
         pass
-    def highLightNode(self,nodeName):
-        self.gNode[nodeName]
-        pass
-    def highLightEdge(self,source,dest):
-        pass
     def toString(self):
         result = ""
         for node in self.graph:
@@ -328,6 +326,10 @@ class DrawWidget(QtGui.QGraphicsView):
 
     def getGEdgesOf(self,nodeName):
         return self.gGraph[nodeName]
+    def getGEdge(self,source,dest):
+        for gEdge in self.gGraph[source]:
+            if gEdge in self.gGraph[dest]:
+                return gEdge
     def hasEdge(self,source,dest):
         if source in self.graph and dest in self.graph:
             if source in self.graph[dest]:
