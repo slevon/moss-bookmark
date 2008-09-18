@@ -3,14 +3,14 @@ import psyco
 import imp
 
 from mylib.HighestDegreeNode import HighestDegreeNode
-from mylib.LeafNode import LeafNode
-from mylib.GraphMLHelpr import GraphMLHelpr
+from mylib.LeafNode          import LeafNode
+from mylib.BreadthFirstTree  import BreadthFirstTree
+from mylib.GraphMLHelpr      import GraphMLHelpr
 
-from TestDrawWidget import MaNode
-from TestDrawWidget import DrawWidget
+from DrawWidget              import DrawWidget,MaNode,MaEdge
 
-from PyQt4 import QtCore, QtGui
-from xml.dom import minidom
+from PyQt4                   import QtCore, QtGui
+from xml.dom                 import minidom
 
 
 
@@ -70,7 +70,8 @@ class MainWindow(QtGui.QMainWindow):
         self.highestDegreeMenu = QtGui.QAction(self.tr("&Highest Degree Node"),self)
         self.connect(self.highestDegreeMenu,QtCore.SIGNAL("triggered()")
                  ,self.highestDegree)
-
+        self.bstMenu = QtGui.QAction(self.tr("&Breadth first traversal tree"),self)
+        self.connect(self.bstMenu,QtCore.SIGNAL("triggered()"),self.bstTree)
 
         #}algorithm
         #layout{
@@ -102,9 +103,10 @@ class MainWindow(QtGui.QMainWindow):
 
         self.algoMenu = self.menuBar().addMenu(self.tr("&Algorithm"))
         self.algoMenu.addAction(self.highestDegreeMenu)
+        self.algoMenu.addAction(self.bstMenu)
 
-        self.layoutMenu = self.menuBar().addMenu(self.tr("&Layout"))
-        self.layoutMenu.addAction(self.simpleLayoutMenu)
+        #self.layoutMenu = self.menuBar().addMenu(self.tr("&Layout"))
+        #self.layoutMenu.addAction(self.simpleLayoutMenu)
 
         self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
         self.helpMenu.addAction(self.aboutActMenu)
@@ -188,7 +190,24 @@ class MainWindow(QtGui.QMainWindow):
             self.mygraph.gNode[node].paintStatus = MaNode.Highlight
             self.mygraph.hide()
             self.mygraph.show()
-
+    def bstTree(self):
+        rootNode, ok = QtGui.QInputDialog.getText(self, 'Root node', 'Enter root node name:')
+        if ok and rootNode != "":
+            bst = BreadthFirstTree().getResult(self.mygraph.getGraph(), str(rootNode))
+            #clear old status
+            for node in self.mygraph.gNode:
+                self.mygraph.gNode[node].paintStatus = MaNode.Unhighlight
+            for edge in self.mygraph.gEdge:
+                self.mygraph.gEdge[edge].paintStatus = MaEdge.Unhighlight
+            for node in bst:
+                self.mygraph.gNode[node].paintStatus = MaNode.Highlight
+                for neightbor in bst[node]:
+                    edge = self.mygraph.getGEdge(node, neightbor)
+                    edge.paintStatus = MaEdge.Highlight
+                self.mygraph.hide()
+                self.mygraph.show()
+        else:
+            QtGui.QMessageBox.information(self,"Invalid input","root node empty")
     def simpleLayout(self):
         pass
 '''Dummy function for test create graph'''
