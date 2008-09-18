@@ -6,6 +6,7 @@ from mylib.HighestDegreeNode import HighestDegreeNode
 from mylib.LeafNode          import LeafNode
 from mylib.BreadthFirstTree  import BreadthFirstTree
 from mylib.GraphMLHelpr      import GraphMLHelpr
+from mylib.LayoutInfo        import LayoutInfo
 
 from DrawWidget              import DrawWidget,MaNode,MaEdge
 
@@ -75,9 +76,9 @@ class MainWindow(QtGui.QMainWindow):
 
         #}algorithm
         #layout{
-        self.simpleLayoutMenu = QtGui.QAction(self.tr("&Simple layout"),self)
-        self.connect(self.simpleLayoutMenu,QtCore.SIGNAL("triggered()")
-                     ,self.simpleLayout)
+        self.layoutInfoMenu = QtGui.QAction(self.tr("&Layout info"),self)
+        self.connect(self.layoutInfoMenu,QtCore.SIGNAL("triggered()")
+                     ,self.layoutInfo)
         #}layout
         #help{
         self.aboutActMenu = QtGui.QAction(self.tr("&About"), self)
@@ -105,8 +106,8 @@ class MainWindow(QtGui.QMainWindow):
         self.algoMenu.addAction(self.highestDegreeMenu)
         self.algoMenu.addAction(self.bstMenu)
 
-        #self.layoutMenu = self.menuBar().addMenu(self.tr("&Layout"))
-        #self.layoutMenu.addAction(self.simpleLayoutMenu)
+        self.layoutMenu = self.menuBar().addMenu(self.tr("&Layout"))
+        self.layoutMenu.addAction(self.layoutInfoMenu)
 
         self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
         self.helpMenu.addAction(self.aboutActMenu)
@@ -208,7 +209,9 @@ class MainWindow(QtGui.QMainWindow):
                 self.mygraph.show()
         else:
             QtGui.QMessageBox.information(self,"Invalid input","root node empty")
-    def simpleLayout(self):
+    def layoutInfo(self):
+        info = LayoutInfo()
+        info.getInfo(self.mygraph.gNode)
         pass
 '''Dummy function for test create graph'''
 #if this is main module do this
