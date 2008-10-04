@@ -34,12 +34,12 @@ class MaNode(QtGui.QGraphicsItem):
                                           -(MaNode.NHigh*(3/10)),
                                           MaNode.NWigth)
 
-        if gNodeType == MaNode.HLC:
+        if gNodeType == MaNode.HLC:#High light click
             penstyle.setCenter((MaNode.NWigth*(3/10)),
                                     (MaNode.NHigh*(3/10)))
             penstyle.setFocalPoint((MaNode.NWigth*(3/10)),
                                     (MaNode.NHigh*(3/10)))
-            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.blue).light(150))
+            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.blue).light(170))
             penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.darkBlue).light(200))
         elif gNodeType == MaNode.ULC:
             penstyle.setCenter((MaNode.NWigth*(3/10)),
@@ -48,9 +48,9 @@ class MaNode(QtGui.QGraphicsItem):
                                     (MaNode.NHigh*(3/10)))
             penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.yellow).light(120))
             penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
-        elif gNodeType == MaNode.HLN:
-            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.blue).light(150))
-            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.darkBlue).light(170))
+        elif gNodeType == MaNode.HLN:#High light No click
+            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.blue).light(190))
+            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.darkBlue).light(180))
         elif gNodeType == MaNode.ULN:
             penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.yellow))
             penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.darkYellow).light(150))
