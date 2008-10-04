@@ -1,5 +1,5 @@
 import sys
-import psyco
+#import psyco
 import imp
 
 from mylib.HighestDegreeNode import HighestDegreeNode
@@ -76,9 +76,9 @@ class MainWindow(QtGui.QMainWindow):
 
         #}algorithm
         #layout{
-        self.layoutInfoMenu = QtGui.QAction(self.tr("&Layout info"),self)
-        self.connect(self.layoutInfoMenu,QtCore.SIGNAL("triggered()")
-                     ,self.layoutInfo)
+        #self.layoutInfoMenu = QtGui.QAction(self.tr("&Layout info"),self)
+        #self.connect(self.layoutInfoMenu,QtCore.SIGNAL("triggered()")
+        #             ,self.layoutInfo)
         #}layout
         #help{
         self.aboutActMenu = QtGui.QAction(self.tr("&About"), self)
@@ -106,8 +106,8 @@ class MainWindow(QtGui.QMainWindow):
         self.algoMenu.addAction(self.highestDegreeMenu)
         self.algoMenu.addAction(self.bstMenu)
 
-        self.layoutMenu = self.menuBar().addMenu(self.tr("&Layout"))
-        self.layoutMenu.addAction(self.layoutInfoMenu)
+        #self.layoutMenu = self.menuBar().addMenu(self.tr("&Layout"))
+        #self.layoutMenu.addAction(self.layoutInfoMenu)
 
         self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
         self.helpMenu.addAction(self.aboutActMenu)
@@ -216,7 +216,7 @@ class MainWindow(QtGui.QMainWindow):
 '''Dummy function for test create graph'''
 #if this is main module do this
 if __name__ == "__main__":
-    psyco.full()
+    #psyco.full()
     #Create Object application need for Qt apps
     app = QtGui.QApplication(sys.argv)
     #Create main window
