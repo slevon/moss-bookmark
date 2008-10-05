@@ -18,8 +18,6 @@ from xml.dom                 import minidom
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         QtGui.QMainWindow.__init__(self)
-        self.pluginsLayout = []
-        self.pluginsAlgo   = {} #pluginName -> plugin Class
         self.createActions()
         self.createMenus()
         self.resize(500,500)
@@ -32,23 +30,19 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.mygraph)
         self.setWindowTitle('Moss Graph Viewr Qt')
         self.setCenterScreen()
-        self.statusBar().showMessage('Not ready')
 
     def createActions(self):
         #file{
         self.openFileMenu = QtGui.QAction(self.tr("&Open file"),self)
         self.openFileMenu.setShortcut('Ctrl+O')
-        self.setStatusTip('Open GraphXml File')
         self.connect(self.openFileMenu,QtCore.SIGNAL('triggered()'),self.openFile)
 
         self.saveFileMenu = QtGui.QAction(self.tr("&Save as"),self)
         self.saveFileMenu.setShortcut('Ctrl+S')
-        self.setStatusTip('Save to GraphXml File')
         self.connect(self.saveFileMenu,QtCore.SIGNAL('triggered()'),self.saveFile)
 
         self.exitMenu = QtGui.QAction(QtGui.QIcon('../images/close.png'),self.tr("&Exit"), self)
         self.exitMenu.setShortcut('Ctrl+Q')
-        self.exitMenu.setStatusTip('Exit application')
         self.connect(self.exitMenu,QtCore.SIGNAL('triggered()'),
                      QtGui.qApp,QtCore.SLOT('quit()'))
         #}file
@@ -82,11 +76,9 @@ class MainWindow(QtGui.QMainWindow):
         #}layout
         #help{
         self.aboutActMenu = QtGui.QAction(self.tr("&About"), self)
-        self.aboutActMenu.setStatusTip(self.tr("Show the application's About box"))
         self.connect(self.aboutActMenu, QtCore.SIGNAL("triggered()"), self.about)
 
         self.aboutQtActMenu = QtGui.QAction(self.tr("About &Qt"), self)
-        self.aboutQtActMenu.setStatusTip(self.tr("Show the Qt library's About box"))
         self.connect(self.aboutQtActMenu, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT("aboutQt()"))
         #}help
 
