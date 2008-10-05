@@ -28,6 +28,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
 xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns \
 http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n'
         #first version not support directed graph
+        
         xmlGraph       = '\t<graph id="G" edgedefault="undirected">\n'
         xmlGraphTail   = '\t</graph>\n'
         xmlTail        = '</graphml>\n'
