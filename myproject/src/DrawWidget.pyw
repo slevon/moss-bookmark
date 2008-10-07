@@ -40,7 +40,7 @@ class MaNode(QtGui.QGraphicsItem):
             penstyle.setFocalPoint((MaNode.NWigth*(3/10)),
                                     (MaNode.NHigh*(3/10)))
             penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.blue).light(170))
-            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.darkBlue).light(200))
+            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.darkBlue).light(220))
         elif gNodeType == MaNode.ULC:
             penstyle.setCenter((MaNode.NWigth*(3/10)),
                                     (MaNode.NHigh*(3/10)))
@@ -49,8 +49,8 @@ class MaNode(QtGui.QGraphicsItem):
             penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.yellow).light(120))
             penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
         elif gNodeType == MaNode.HLN:#High light No click
-            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.blue).light(190))
-            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.darkBlue).light(180))
+            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.blue).light(120))#zero is center out
+            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.blue).light(170))#one is border in
         elif gNodeType == MaNode.ULN:
             penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.yellow))
             penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.darkYellow).light(150))
@@ -382,6 +382,9 @@ if __name__ == "__main__":
     widget.addEdge("C","A")
     widget.addEdge("C","B")
     widget.addEdge("C","G")
+    widget.gNode["A"].paintStatus = MaNode.Highlight
+    widget.gNode["Z"].paintStatus = MaNode.Highlight
+    widget.getGEdge("A","Z").paintStatus = MaEdge.Highlight
     #highestList,highestValue = SimpleAlgorithm.highestDegreeNode(widget.getGraph())
     #print "Highest degree node list",highestList
     #print "Max at",highestValue
