@@ -244,28 +244,34 @@ class DrawWidget(QtGui.QGraphicsView):
             print "Has edge",source,'<==>',dest,'already'
             return
         if (type(source) == str) and (type(dest) == str):
-            newGEdge = MaEdge(self.gNode[source],self.gNode[dest])
+
             #add to graph skeleton
             if source == "" or dest == "":
                 print "Empty name add edge"
                 return
+
             if source in self.graph:
                 self.graph[source].append(dest)
-                self.gGraph[source].append(newGEdge)
             else:#create new node
                 self.addNode(source)
                 self.graph[source] =[dest]
-                self.gGraph[source] = [newGEdge]
-
 
             if dest in self.graph:
                 self.graph[dest].append(source)
-                self.gGraph[dest].append(newGEdge)
             else:#create new node
                 self.addNode(dest)
                 self.graph[dest] = [source]
-                self.gGraph[dest] = [newGEdge]
+            #create graphic object
+            newGEdge = MaEdge(self.gNode[source],self.gNode[dest])
+            if source in self.graph:
+                self.gGraph[source].append(newGEdge)
+            else:#create new node
+                self.gGraph[source] = [newGEdge]
 
+            if dest in self.graph:
+                self.gGraph[dest].append(newGEdge)
+            else:
+                self.gGraph[dest] = [newGEdge]
             #add to graphic widget
 
             if not(source,dest) in self.gEdge \
@@ -376,11 +382,11 @@ if __name__ == "__main__":
     widget.addEdge("C","A")
     widget.addEdge("C","B")
     widget.addEdge("C","G")
-    highestList,highestValue = SimpleAlgorithm.highestDegreeNode(widget.getGraph())
-    print "Highest degree node list",highestList
-    print "Max at",highestValue
-    for resultNode in highestList:
-        widget.gNode[resultNode].paintStatus = MaNode.Highlight
+    #highestList,highestValue = SimpleAlgorithm.highestDegreeNode(widget.getGraph())
+    #print "Highest degree node list",highestList
+    #print "Max at",highestValue
+    #for resultNode in highestList:
+    #    widget.gNode[resultNode].paintStatus = MaNode.Highlight
     #widget.delEdge("A","B")
     print "Graph toString",widget.toString()
     print "Get edge of A is",widget.getEdgesOf("A")
