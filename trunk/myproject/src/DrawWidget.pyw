@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from PyQt4 import QtGui,QtCore
+
 import sys
 import random
 import math
@@ -222,10 +223,12 @@ class DrawWidget(QtGui.QGraphicsView):
     def addNode(self,node):
         if type(node) == str:
             if self.hasNode(node):
-                print "Has node %s already"%(node)
+                QtGui.QMessageBox.information(self,"Wrong input","Has node \"%s\" already"%(node))
+                #print "Has node %s already"%(node)
                 return
             if node == "":
-                print "Empty name add node"
+                QtGui.QMessageBox.information(self,"Wrong input","Node name is empty")
+                #print "Empty name add node"
                 return
             newitem = MaNode(self,node)
             self.graph[node] = []
