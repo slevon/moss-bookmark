@@ -218,7 +218,7 @@ class DrawWidget(QtGui.QGraphicsView):
         self.graph = {} #set of all nodes point to neightbor as edges in str information
         self.gGraph = {} #set of all nodes point to gEdge
         self.gNode = {}
-        self.gEdge = {}
+        self.gEdge = {} #set of tuple of edge point to gEdge
         self.kownt = 0
     def addNode(self,node):
         if type(node) == str:
@@ -279,8 +279,10 @@ class DrawWidget(QtGui.QGraphicsView):
 
             if not(source,dest) in self.gEdge \
             or not(dest,source) in self.gEdge:
-                self.gEdge[(source,dest)] = newGEdge
+                self.gEdge[(source,dest)] = [newGEdge,1] #default weight is 1
             self.scene.addItem(newGEdge)
+
+
     def delNode(self,node):
         if node in self.graph:
             self.scene.removeItem(self.gNode[node])
@@ -290,18 +292,34 @@ class DrawWidget(QtGui.QGraphicsView):
                 if (node,neightbor) in self.gEdge:
                     self.scene.removeItem(self.gEdge[(node,neightbor)])
 
-                elif  (neightbor,node) in self.gEdge:
+                elif (neightbor,node) in self.gEdge:
                     self.scene.removeItem(self.gEdge[(neightbor,node)])
                 print "Del %s to %s"%(node,neightbor)
                 self.graph[neightbor].remove(node)
             del self.gNode[node]
             del self.graph[node]
+    def setWeight(self,weight,source,dest):
+        if (source,dest) in self.gEdge:
+            self.gEdge[(source,dest)][1] = weight
+        elif  (dest,source) in self.gEdge:
+            self.gEdge[(dest,source)][1] = weight
+    def getWeight(self,source,dest):
+        if (source,dest) in self.gEdge:
+            if len(self.gEdge[(source,dest)]) > 1:
+                return self.gEdge[(source,dest)][1]
+            else:
+                return 1
+        elif  (dest,source) in self.gEdge:
+            if len(self.gEdge[(dest,source)]) > 1:
+                return self.gEdge[(dest,source)][1]
+            else:
+                return 1
 
     def delEdge(self,source,dest):
         if (source,dest) in self.gEdge:
-            self.scene.removeItem(self.gEdge[(source,dest)])
+            self.scene.removeItem(self.gEdge[(source,dest)][0])
         elif  (dest,source) in self.gEdge:
-            self.scene.removeItem(self.gEdge[(dest,source)])
+            self.scene.removeItem(self.gEdge[(dest,source)][0])
         if dest in self.graph[source]:
             self.graph[source].remove(dest)
             self.graph[dest].remove(source)
@@ -324,13 +342,13 @@ class DrawWidget(QtGui.QGraphicsView):
             return self.graph[nodeName]
 
     def getEdges(self):
-        result = set()
+        result = {}
         for key in self.graph:
             neighbors = self.graph[key]
             for neighbor in neighbors:
                 #not have this edge before
                 if not (key,neighbor) or not (neighbor,key) in result:
-                    result.add((key,neighbor))
+                    result[(key,neighbor)] = self.getWeight(key,neighbor)
         return result
 
     def getGEdgesOf(self,nodeName):
@@ -388,6 +406,8 @@ if __name__ == "__main__":
     widget.gNode["A"].paintStatus = MaNode.Highlight
     widget.gNode["Z"].paintStatus = MaNode.Highlight
     widget.getGEdge("A","Z").paintStatus = MaEdge.Highlight
+    widget.setWeight(2,"A","G")
+    print "weight of A to G is",widget.getWeight("A","G")
     #highestList,highestValue = SimpleAlgorithm.highestDegreeNode(widget.getGraph())
     #print "Highest degree node list",highestList
     #print "Max at",highestValue
@@ -398,7 +418,7 @@ if __name__ == "__main__":
     print "Get edge of A is",widget.getEdgesOf("A")
     print "Get edge of B is",widget.getEdgesOf("B")
     print "Nodes name",widget.getNodesName()
-    print "Hole graph",widget.getGraph()
+    print "Whole graph",widget.getGraph()
     print "All Edges",widget.getEdges()
     widget.show()
     sys.exit(app.exec_())

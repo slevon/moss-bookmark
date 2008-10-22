@@ -26,9 +26,11 @@ class GraphMLHelpr(object):
 '<graphml xmlns="http://graphml.graphdrawing.org/xmlns" \
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
 xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns \
-http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n'
+http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n \
+<key id="weight" for="edge" attr.name="weight" attr.type="double"/> \
+'
         #first version not support directed graph
-        
+
         xmlGraph       = '\t<graph id="G" edgedefault="undirected">\n'
         xmlGraphTail   = '\t</graph>\n'
         xmlTail        = '</graphml>\n'
@@ -39,6 +41,7 @@ http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">\n'
             xmlNode += '\t\t<node id="%s"/>\n'%(node)
         edges = graphWidget.getEdges()
         for edge in edges:
+
             xmlEdge += '\t\t<edge source="%s" target="%s"/>\n'%(edge)
         xmlResult = xmlDefine+xmlRoot+xmlGraph+\
                     xmlNode+xmlEdge+\
