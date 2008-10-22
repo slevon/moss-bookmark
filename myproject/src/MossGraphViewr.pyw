@@ -60,6 +60,13 @@ class MainWindow(QtGui.QMainWindow):
 
         self.delEdgeMenu = QtGui.QAction(self.tr("&Remove Edge"),self)
         self.connect(self.delEdgeMenu,QtCore.SIGNAL("triggered()"),self.delEdge)
+
+        self.setWeightMenu = QtGui.QAction(self.tr("&Set weight"),self)
+        self.connect(self.setWeightMenu,QtCore.SIGNAL("triggered()"),self.setWeight)
+
+        self.graphInfoMenu = QtGui.QAction(self.tr("&Graph info"),self)
+        self.connect(self.graphInfoMenu,QtCore.SIGNAL("triggered()"),self.infoGraph)
+
         #}graph
         #algorithm{
         self.highestDegreeMenu = QtGui.QAction(self.tr("&Highest Degree Node"),self)
@@ -93,6 +100,8 @@ class MainWindow(QtGui.QMainWindow):
         self.graphmenu.addAction(self.addEdgeMenu)
         self.graphmenu.addAction(self.delNodeMenu)
         self.graphmenu.addAction(self.delEdgeMenu)
+        self.graphmenu.addAction(self.setWeightMenu)
+        self.graphmenu.addAction(self.graphInfoMenu)
 
         self.algoMenu = self.menuBar().addMenu(self.tr("&Algorithm"))
         self.algoMenu.addAction(self.highestDegreeMenu)
@@ -144,6 +153,16 @@ class MainWindow(QtGui.QMainWindow):
         dest, ok2 = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter destination node name:')
         if ok1 and ok2:
             self.mygraph.delEdge(str(source), str(dest))
+    def setWeight(self):
+        source, ok1 = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter source node name:')
+        dest, ok2 = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter destination node name:')
+        weight, ok3 = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter weight:')
+        if ok1 and ok2 and ok3:
+            self.mygraph.setWeight(float(weight),str(source), str(dest))
+    def infoGraph(self):
+        print "Whole graph",self.mygraph.getGraph()
+        print "All edges",self.mygraph.getEdges()
+        print "To String\n",self.mygraph.toString()
     def openFile(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file',
                     '.',"XML File (*.xml *.graphML)")
