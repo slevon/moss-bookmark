@@ -21,6 +21,7 @@ class BreadthFirstTree:
                        (not neightbor in waitQueue):
 
                         waitQueue.append(neightbor)
+                        #insert in to result
                         if traverseNode in resultGraph:
                             resultGraph[traverseNode].append(neightbor)
                         else:

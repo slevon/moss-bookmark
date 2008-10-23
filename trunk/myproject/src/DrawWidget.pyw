@@ -117,7 +117,7 @@ class MaEdge(QtGui.QGraphicsItem):
 
     def __init__(self, sourceNode, destNode):
         QtGui.QGraphicsItem.__init__(self)
-
+        self.weight = 1
         self.sourcePoint = QtCore.QPointF()
         self.destPoint = QtCore.QPointF()
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
@@ -145,6 +145,10 @@ class MaEdge(QtGui.QGraphicsItem):
     def setDestNode(self, node):
         self.dest = node
         self.adjust()
+    def setWeight(self,newWeight):
+        self.weight = newWeight
+    def getWeight(self):
+        return self.weight
     def adjust(self):
         if not self.source or not self.dest:
             return
@@ -279,7 +283,7 @@ class DrawWidget(QtGui.QGraphicsView):
 
             if not(source,dest) in self.gEdge \
             or not(dest,source) in self.gEdge:
-                self.gEdge[(source,dest)] = [newGEdge,1] #default weight is 1
+                self.gEdge[(source,dest)] = newGEdge #default weight is 1
             self.scene.addItem(newGEdge)
 
 
@@ -300,26 +304,21 @@ class DrawWidget(QtGui.QGraphicsView):
             del self.graph[node]
     def setWeight(self,weight,source,dest):
         if (source,dest) in self.gEdge:
-            self.gEdge[(source,dest)][1] = weight
+            self.gEdge[(source,dest)].setWeight(weight)
         elif  (dest,source) in self.gEdge:
-            self.gEdge[(dest,source)][1] = weight
+            self.gEdge[(dest,source)].setWeight(weight)
     def getWeight(self,source,dest):
         if (source,dest) in self.gEdge:
-            if len(self.gEdge[(source,dest)]) > 1:
-                return self.gEdge[(source,dest)][1]
-            else:
-                return 1
+            return self.gEdge[(source,dest)].getWeight()
         elif  (dest,source) in self.gEdge:
-            if len(self.gEdge[(dest,source)]) > 1:
-                return self.gEdge[(dest,source)][1]
-            else:
-                return 1
+            return self.gEdge[(dest,source)].getWeight()
+
 
     def delEdge(self,source,dest):
         if (source,dest) in self.gEdge:
-            self.scene.removeItem(self.gEdge[(source,dest)][0])
+            self.scene.removeItem(self.gEdge[(source,dest)])
         elif  (dest,source) in self.gEdge:
-            self.scene.removeItem(self.gEdge[(dest,source)][0])
+            self.scene.removeItem(self.gEdge[(dest,source)])
         if dest in self.graph[source]:
             self.graph[source].remove(dest)
             self.graph[dest].remove(source)
@@ -337,6 +336,7 @@ class DrawWidget(QtGui.QGraphicsView):
     #def getGNode(self,name):
     def getGraph(self):
         return self.graph
+
     def getEdgesOf(self,nodeName):
         if nodeName in self.graph:
             return self.graph[nodeName]
