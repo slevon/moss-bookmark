@@ -7,6 +7,7 @@ from mylib.LeafNode          import LeafNode
 from mylib.BreadthFirstTree  import BreadthFirstTree
 from mylib.GraphMLHelpr      import GraphMLHelpr
 from mylib.LayoutInfo        import LayoutInfo
+from mylib.PrimMinimumSpanningTree import PrimMinimumSpanningTree
 
 from DrawWidget              import DrawWidget,MaNode,MaEdge
 
@@ -56,15 +57,19 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.addEdgeMenu,QtCore.SIGNAL("triggered()"),self.addEdge)
 
         self.delNodeMenu = QtGui.QAction(self.tr("&Remove Node"),self)
+        self.delNodeMenu.setShortcut('Ctrl+Shift+N')
         self.connect(self.delNodeMenu,QtCore.SIGNAL("triggered()"),self.delNode)
 
         self.delEdgeMenu = QtGui.QAction(self.tr("&Remove Edge"),self)
+        self.delEdgeMenu.setShortcut('Ctrl+Shift+E')
         self.connect(self.delEdgeMenu,QtCore.SIGNAL("triggered()"),self.delEdge)
 
         self.setWeightMenu = QtGui.QAction(self.tr("&Set weight"),self)
+        self.setWeightMenu.setShortcut('Ctrl+W')
         self.connect(self.setWeightMenu,QtCore.SIGNAL("triggered()"),self.setWeight)
 
         self.graphInfoMenu = QtGui.QAction(self.tr("&Graph info"),self)
+        self.graphInfoMenu.setShortcut('Ctrl+G')
         self.connect(self.graphInfoMenu,QtCore.SIGNAL("triggered()"),self.infoGraph)
 
         #}graph
@@ -74,6 +79,9 @@ class MainWindow(QtGui.QMainWindow):
                  ,self.highestDegree)
         self.bstMenu = QtGui.QAction(self.tr("&Breadth first traversal tree"),self)
         self.connect(self.bstMenu,QtCore.SIGNAL("triggered()"),self.bstTree)
+
+        self.mstMenu = QtGui.QAction(self.tr("&Prim Minimum Spanning Tree"),self)
+        self.connect(self.mstMenu,QtCore.SIGNAL("triggered()"),self.mstTree)
 
         #}algorithm
         #layout{
@@ -106,6 +114,7 @@ class MainWindow(QtGui.QMainWindow):
         self.algoMenu = self.menuBar().addMenu(self.tr("&Algorithm"))
         self.algoMenu.addAction(self.highestDegreeMenu)
         self.algoMenu.addAction(self.bstMenu)
+        self.algoMenu.addAction(self.mstMenu)
 
         #self.layoutMenu = self.menuBar().addMenu(self.tr("&Layout"))
         #self.layoutMenu.addAction(self.layoutInfoMenu)
@@ -131,10 +140,10 @@ class MainWindow(QtGui.QMainWindow):
             event.ignore()
 
     def about(self):
-        QtGui.QMessageBox.about(self, self.tr("About Application"),
-            self.tr("The <b>Application</b> example demonstrates how to "
-                    "write modern GUI applications using Qt, with a menu bar, "
-                    "toolbars, and a status bar."))
+        QtGui.QMessageBox.about(self, self.tr("About Moss graph viewr"),
+            self.tr("The <b>Application</b> provide Reader/Editor of graph data structure in GUI mode.<br/>"
+                    "This is version 0.1 beta.<br/>"
+                    "First version that support weighted graph."))
     def addNode(self):
         nodeName, ok = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter node name:')
         if ok:
@@ -158,11 +167,30 @@ class MainWindow(QtGui.QMainWindow):
         dest, ok2 = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter destination node name:')
         weight, ok3 = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter weight:')
         if ok1 and ok2 and ok3:
-            self.mygraph.setWeight(float(weight),str(source), str(dest))
+            try:
+                self.mygraph.setWeight(float(weight),str(source), str(dest))
+            except ValueError:
+                #print "Value error"
+                pass
     def infoGraph(self):
-        print "Whole graph",self.mygraph.getGraph()
-        print "All edges",self.mygraph.getEdges()
-        print "To String\n",self.mygraph.toString()
+        info  = "<table border=1><tr><th>  Edge  </th>\
+                <th>  Weight  </th></tr>"
+        allEdge = self.mygraph.getEdges()
+        totalEdge = len(allEdge)
+        totalNode = len(self.mygraph.getGraph())
+        for edge in allEdge:
+            info += "<tr>"
+            info += "<td align='center'>%s--%s</td>"%(edge[0],edge[1])
+            info += "<td align='center'>%d</td>"%(self.mygraph.getGEdge(edge[0],edge[1]).getWeight())
+            info += "</tr>"
+        info += "<tr><th> Total node:</th><th>%d</th></tr>"%(totalNode)
+        info += "<tr><th> Total edge:</th><th>%d</th></tr>"%(totalEdge)
+        info += "</table>"
+        QtGui.QMessageBox.about(self, self.tr("Graph Info"),
+            self.tr(info))
+        #print "Whole graph",self.mygraph.getGraph()
+        #print "All edges",self.mygraph.getEdges()
+        #print "To String\n",self.mygraph.toString()
     def openFile(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file',
                     '.',"XML File (*.xml *.graphML)")
@@ -194,32 +222,33 @@ class MainWindow(QtGui.QMainWindow):
         print self.mygraph.toString()
     def highestDegree(self):
         highestList = HighestDegreeNode().getResult(self.mygraph.getGraph())
-        #clear old status
-        for node in self.mygraph.gNode:
-            self.mygraph.gNode[node].paintStatus = MaNode.Unhighlight
-        #set new status
-        for node in highestList:
-            self.mygraph.gNode[node].paintStatus = MaNode.Highlight
-            self.mygraph.hide()
-            self.mygraph.show()
+        self.setResult(highestList)
     def bstTree(self):
         rootNode, ok = QtGui.QInputDialog.getText(self, 'Root node', 'Enter root node name:')
         if ok and rootNode != "":
             bst = BreadthFirstTree().getResult(self.mygraph.getGraph(), str(rootNode))
-            #clear old status
-            for node in self.mygraph.gNode:
-                self.mygraph.gNode[node].paintStatus = MaNode.Unhighlight
-            for edge in self.mygraph.gEdge:
-                self.mygraph.gEdge[edge].paintStatus = MaEdge.Unhighlight
-            for node in bst:
-                self.mygraph.gNode[node].paintStatus = MaNode.Highlight
-                for neightbor in bst[node]:
-                    edge = self.mygraph.getGEdge(node, neightbor)
-                    edge.paintStatus = MaEdge.Highlight
-                self.mygraph.hide()
-                self.mygraph.show()
+            self.setResult(bst)
         else:
             QtGui.QMessageBox.information(self,"Invalid input","root node empty")
+    def mstTree(self):
+        mst = PrimMinimumSpanningTree().getResult(self.mygraph)#weighted graph
+        self.setResult(mst)
+    def setResult(self,resultGraph):
+        #clear old status
+        for node in self.mygraph.gNode:
+            self.mygraph.gNode[node].paintStatus = MaNode.Unhighlight
+        for edge in self.mygraph.gEdge:
+            self.mygraph.gEdge[edge].paintStatus = MaEdge.Unhighlight
+        #set new status
+        for node in resultGraph:
+            self.mygraph.gNode[node].paintStatus = MaNode.Highlight
+            #paint highlight edge
+            for neightbor in resultGraph[node]:
+                edge = self.mygraph.getGEdge(node, neightbor)
+                edge.paintStatus = MaEdge.Highlight
+        #repaint new status
+        self.mygraph.hide()
+        self.mygraph.show()
     def layoutInfo(self):
         info = LayoutInfo()
         info.getInfo(self.mygraph.gNode)
