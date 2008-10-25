@@ -210,6 +210,7 @@ class MainWindow(QtGui.QMainWindow):
             graphML.saveXML(filename,self.mygraph)
     def graphMLAddGraph(self,inputText):
         inputXML = minidom.parseString(inputText)
+        self.mygraph.clean()
         del self.mygraph
         self.mygraph = DrawWidget()
         self.setCentralWidget(self.mygraph)
