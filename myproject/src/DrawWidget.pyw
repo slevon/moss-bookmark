@@ -103,13 +103,16 @@ class MaNode(QtGui.QGraphicsItem):
     def mousePressEvent(self, event):
         self.update()
         QtGui.QGraphicsItem.mousePressEvent(self, event)
-
+        self.graph.hide()
+        self.graph.show()
     def mouseReleaseEvent(self,event):
         self.update()
         #update edge
         gEdges = self.graph.getGEdgesOf(self.name)
         for gEdge in gEdges:
             gEdge.adjust()
+        self.graph.hide()
+        self.graph.show()
         QtGui.QGraphicsItem.mouseReleaseEvent(self, event)
 class MaEdge(QtGui.QGraphicsItem):
     Pi = math.pi
@@ -187,10 +190,6 @@ class MaEdge(QtGui.QGraphicsItem):
         # Draw the line itself.
         line = QtCore.QLineF(self.sourcePoint, self.destPoint)
 
-        print "source x",self.sourcePoint.x(),"of",self.sourceNode().getName()
-        print "source y",self.sourcePoint.y(),"of",self.sourceNode().getName()
-        print "dest x",self.destPoint.x(),"of",self.destNode().getName()
-        print "dest y",self.destPoint.y(),"of",self.destNode().getName()
         #calculate center to place weight paint
         newx = 0.0
         newy = 0.0
@@ -206,30 +205,10 @@ class MaEdge(QtGui.QGraphicsItem):
         elif self.sourcePoint.x() <= self.destPoint.x() and self.sourcePoint.y() > self.destPoint.y():
             newx = self.sourcePoint.x() + (self.destPoint.x() - self.sourcePoint.x())/2
             newy = self.sourcePoint.y() - (self.sourcePoint.y() - self.destPoint.y())/2
-            pass
         #(0,0) -> (-2,-2)
         elif self.sourcePoint.x() > self.destPoint.x() and self.sourcePoint.y() > self.destPoint.y():
             newx = self.destPoint.x() + (self.sourcePoint.x() - self.destPoint.x())/2
             newy = self.destPoint.y() + (self.sourcePoint.y() - self.destPoint.y())/2
-            pass
-
-        '''
-        if self.sourcePoint.x() > self.destPoint.x():
-            newx = self.destPoint.x() + (self.sourcePoint.x() - self.destPoint.x())/2
-        elif self.sourcePoint.x() < self.destPoint.x():
-            newx = self.sourcePoint.x() + (self.destPoint.x() - self.sourcePoint.x())/2
-
-        if self.sourcePoint.x() < self.destPoint.x():
-            if self.sourcePoint.y() > self.destPoint.y():
-                newy = self.destPoint.y()+(self.sourcePoint.y() - self.destPoint.y())/2
-            elif self.sourcePoint.y < self.destPoint.y():
-                newy = self.sourcePoint.y() - (self.destPoint.y() - self.sourcePoint())/2
-
-            if self.sourcePoint.y() > self.destPoint.y():
-                newy = self.sourcePoint.y()-(self.sourcePoint.y() - self.destPoint.y())/2
-            elif self.sourcePoint.y < self.destPoint.y():
-                newy = self.destPoint.y() - (self.destPoint.y() - self.sourcePoint())/2
-        '''
 
         if line.length() == 0.0:
             return
@@ -273,6 +252,13 @@ class DrawWidget(QtGui.QGraphicsView):
         self.gNode = {}
         self.gEdge = {} #set of tuple of edge point to gEdge
         self.kownt = 0
+    def clean(self):
+        del self.gEdge
+        del self.gGraph
+        del self.gNode
+        del self.kownt
+        del self.scene
+        del self.graph
     def addNode(self,node):
         if type(node) == str:
             if self.hasNode(node):
