@@ -97,10 +97,13 @@ class MaNode(QtGui.QGraphicsItem):
             gEdges = self.graph.getGEdgesOf(self.name)
             for gEdge in gEdges:
                 gEdge.adjust()
+        self.graph.hide()
+        self.graph.show()
         return QtGui.QGraphicsItem.itemChange(self,change,value)
     def mousePressEvent(self, event):
         self.update()
         QtGui.QGraphicsItem.mousePressEvent(self, event)
+
     def mouseReleaseEvent(self,event):
         self.update()
         #update edge
@@ -117,7 +120,7 @@ class MaEdge(QtGui.QGraphicsItem):
 
     def __init__(self, sourceNode, destNode):
         QtGui.QGraphicsItem.__init__(self)
-        self.weight = 1
+        self.weight = 1.0
         self.sourcePoint = QtCore.QPointF()
         self.destPoint = QtCore.QPointF()
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
@@ -184,12 +187,58 @@ class MaEdge(QtGui.QGraphicsItem):
         # Draw the line itself.
         line = QtCore.QLineF(self.sourcePoint, self.destPoint)
 
+        print "source x",self.sourcePoint.x(),"of",self.sourceNode().getName()
+        print "source y",self.sourcePoint.y(),"of",self.sourceNode().getName()
+        print "dest x",self.destPoint.x(),"of",self.destNode().getName()
+        print "dest y",self.destPoint.y(),"of",self.destNode().getName()
+        #calculate center to place weight paint
+        newx = 0.0
+        newy = 0.0
+        #(0,0) -> (2,2)
+        if self.sourcePoint.x() <= self.destPoint.x() and self.sourcePoint.y() <= self.destPoint.y():
+            newx = self.sourcePoint.x() + (self.destPoint.x() - self.sourcePoint.x())/2
+            newy = self.destPoint.y() - (self.destPoint.y() - self.sourcePoint.y())/2
+        #(0,0) -> (-2,2)
+        elif self.sourcePoint.x() > self.destPoint.x() and self.sourcePoint.y() <= self.destPoint.y():
+            newx = self.destPoint.x() + (self.sourcePoint.x() - self.destPoint.x())/2
+            newy = self.sourcePoint.y() + (self.destPoint.y() - self.sourcePoint.y())/2
+        #(0,0) -> (2,-2)
+        elif self.sourcePoint.x() <= self.destPoint.x() and self.sourcePoint.y() > self.destPoint.y():
+            newx = self.sourcePoint.x() + (self.destPoint.x() - self.sourcePoint.x())/2
+            newy = self.sourcePoint.y() - (self.sourcePoint.y() - self.destPoint.y())/2
+            pass
+        #(0,0) -> (-2,-2)
+        elif self.sourcePoint.x() > self.destPoint.x() and self.sourcePoint.y() > self.destPoint.y():
+            newx = self.destPoint.x() + (self.sourcePoint.x() - self.destPoint.x())/2
+            newy = self.destPoint.y() + (self.sourcePoint.y() - self.destPoint.y())/2
+            pass
+
+        '''
+        if self.sourcePoint.x() > self.destPoint.x():
+            newx = self.destPoint.x() + (self.sourcePoint.x() - self.destPoint.x())/2
+        elif self.sourcePoint.x() < self.destPoint.x():
+            newx = self.sourcePoint.x() + (self.destPoint.x() - self.sourcePoint.x())/2
+
+        if self.sourcePoint.x() < self.destPoint.x():
+            if self.sourcePoint.y() > self.destPoint.y():
+                newy = self.destPoint.y()+(self.sourcePoint.y() - self.destPoint.y())/2
+            elif self.sourcePoint.y < self.destPoint.y():
+                newy = self.sourcePoint.y() - (self.destPoint.y() - self.sourcePoint())/2
+
+            if self.sourcePoint.y() > self.destPoint.y():
+                newy = self.sourcePoint.y()-(self.sourcePoint.y() - self.destPoint.y())/2
+            elif self.sourcePoint.y < self.destPoint.y():
+                newy = self.destPoint.y() - (self.destPoint.y() - self.sourcePoint())/2
+        '''
+
         if line.length() == 0.0:
             return
         if self.paintStatus == MaEdge.Highlight:
             painter.setPen(QtGui.QPen(QtCore.Qt.red, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+            painter.drawText(QtCore.QPointF(newx,newy),str(self.weight))
         else:
             painter.setPen(QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+            painter.drawText(QtCore.QPointF(newx,newy),str(self.weight))
         painter.drawLine(line)
 
         # Draw the arrows if there's enough room.
