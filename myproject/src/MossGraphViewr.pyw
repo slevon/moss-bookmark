@@ -142,8 +142,8 @@ class MainWindow(QtGui.QMainWindow):
     def about(self):
         QtGui.QMessageBox.about(self, self.tr("About Moss graph viewr"),
             self.tr("The <b>Application</b> provide Reader/Editor of graph data structure in GUI mode.<br/>"
-                    "This is version 0.1 beta.<br/>"
-                    "First version that support weighted graph."))
+                    "This is version 0.2 Alpha.<br/>"
+                    "First version that support layout."))
     def addNode(self):
         nodeName, ok = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter node name:')
         if ok:
@@ -254,7 +254,7 @@ class MainWindow(QtGui.QMainWindow):
         info = LayoutInfo()
         info.getInfo(self.mygraph.gNode)
         pass
-'''Dummy function for test create graph'''
+
 #if this is main module do this
 if __name__ == "__main__":
     #psyco.full()

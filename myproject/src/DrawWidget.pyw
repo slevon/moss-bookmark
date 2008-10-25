@@ -18,6 +18,7 @@ class MaNode(QtGui.QGraphicsItem):
     def __init__(self,graphWidget,name):
         QtGui.QGraphicsItem.__init__(self)
         #self.drawWidget = drawWidget
+        self.edgeList = []
         self.graph = graphWidget
         self.newPos = QtCore.QPointF()
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
@@ -90,29 +91,77 @@ class MaNode(QtGui.QGraphicsItem):
                              -(MaNode.NHigh/2)-adjust,
                              MaNode.NWigth+adjust,MaNode.NHigh+adjust)
     def addGEdge(self,edge):
+        self.edgeList.append(edge)
         edge.adjust()
+    def edges(self):
+        return self.edgeList
+    def advance(self):
+        if self.newPos == self.pos():
+            return False
+
+        self.setPos(self.newPos)
+        return True
     #move edge follow node when node move
     def itemChange(self,change,value):
         if change == QtGui.QGraphicsItem.ItemPositionChange:
             gEdges = self.graph.getGEdgesOf(self.name)
             for gEdge in gEdges:
                 gEdge.adjust()
-        self.graph.hide()
-        self.graph.show()
+            self.graph.itemMoved()
+        if __name__ != "__main__":
+            self.graph.hide()
+            self.graph.show()
         return QtGui.QGraphicsItem.itemChange(self,change,value)
+    def calculateForces(self):
+        if not self.scene() or self.scene().mouseGrabberItem() is self:
+            self.newPos = self.pos()
+            return
+
+        # Sum up all forces pushing this item away.
+        xvel = 0.0
+        yvel = 0.0
+        for item in self.scene().items():
+            if not isinstance(item, MaNode):
+                continue
+
+            line = QtCore.QLineF(self.mapFromItem(item, 0, 0), QtCore.QPointF(0, 0))
+            dx = line.dx()
+            dy = line.dy()
+            l = 2.0 * (dx * dx + dy * dy)
+            if l > 0:
+                xvel += (dx * 150.0) / l
+                yvel += (dy * 150.0) / l
+
+        # Now subtract all forces pulling items together.
+        weight = (len(self.edgeList) + 1) * 10.0
+        for edge in self.edgeList:
+            if edge.sourceNode() is self:
+                pos = self.mapFromItem(edge.destNode(), 0, 0)
+            else:
+                pos = self.mapFromItem(edge.sourceNode(), 0, 0)
+            xvel += pos.x() / weight
+            yvel += pos.y() / weight
+
+        if QtCore.qAbs(xvel) < 0.1 and QtCore.qAbs(yvel) < 0.1:
+            xvel = yvel = 0.0
+
+        sceneRect = self.scene().sceneRect()
+        self.newPos = self.pos() + QtCore.QPointF(xvel, yvel)
+        self.newPos.setX(min(max(self.newPos.x(), sceneRect.left() + 10), sceneRect.right() - 10))
+        self.newPos.setY(min(max(self.newPos.y(), sceneRect.top() + 10), sceneRect.bottom() - 10))
     def mousePressEvent(self, event):
         self.update()
         QtGui.QGraphicsItem.mousePressEvent(self, event)
-        self.graph.hide()
-        self.graph.show()
+        #self.graph.hide()
+        #self.graph.show()
     def mouseReleaseEvent(self,event):
         self.update()
         #update edge
         gEdges = self.graph.getGEdgesOf(self.name)
         for gEdge in gEdges:
             gEdge.adjust()
-        self.graph.hide()
-        self.graph.show()
+        #self.graph.hide()
+        #self.graph.show()
         QtGui.QGraphicsItem.mouseReleaseEvent(self, event)
 class MaEdge(QtGui.QGraphicsItem):
     Pi = math.pi
@@ -136,7 +185,7 @@ class MaEdge(QtGui.QGraphicsItem):
         self.adjust()
 
     def type(self):
-        return Edge.Type
+        return MaEdge.Type
 
     def sourceNode(self):
         return self.source
@@ -244,9 +293,11 @@ class DrawWidget(QtGui.QGraphicsView):
     def __init__(self):
         QtGui.QGraphicsView.__init__(self)
         self.scene = QtGui.QGraphicsScene(self)
+        self.scene.setItemIndexMethod(QtGui.QGraphicsScene.NoIndex)
         self.scene.setSceneRect(-20,-20,DrawWidget.scensSize+20,DrawWidget.scensSize+20)#scene size 0-500
         self.setScene(self.scene)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
+        self.timerId = 0
         self.graph = {} #set of all nodes point to neightbor as edges in str information
         self.gGraph = {} #set of all nodes point to gEdge
         self.gNode = {}
@@ -414,6 +465,23 @@ class DrawWidget(QtGui.QGraphicsView):
     #zoomable feature
     def wheelEvent(self, event):
         self.scaleView(math.pow(2.0, -event.delta() / 240.0))
+    def itemMoved(self):
+        if not self.timerId:
+            self.timerId = self.startTimer(1000 / 25)
+    def timerEvent(self, event):
+        nodes = []
+        for nodename in self.gNode:
+            nodes.append(self.gNode[nodename])
+            self.gNode[nodename].calculateForces()
+
+        itemsMoved = False
+        for node in nodes:
+            if node.advance():
+                itemsMoved = True
+
+        if not itemsMoved:
+            self.killTimer(self.timerId)
+            self.timerId = 0
     def scaleView(self, scaleFactor):
         factor = self.matrix().scale(scaleFactor, scaleFactor).mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
 
@@ -424,7 +492,7 @@ class DrawWidget(QtGui.QGraphicsView):
 '''Main'''
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
-    QtCore.qsrand(QtCore.QTime(0,0,0).secsTo(QtCore.QTime.currentTime()))
+
 
     widget = DrawWidget()
     widget.addNode("G")
@@ -442,6 +510,7 @@ if __name__ == "__main__":
     widget.gNode["Z"].paintStatus = MaNode.Highlight
     widget.getGEdge("A","Z").paintStatus = MaEdge.Highlight
     widget.setWeight(2,"A","G")
+    QtCore.qsrand(QtCore.QTime(0,0,0).secsTo(QtCore.QTime.currentTime()))
     print "weight of A to G is",widget.getWeight("A","G")
     #highestList,highestValue = SimpleAlgorithm.highestDegreeNode(widget.getGraph())
     #print "Highest degree node list",highestList
