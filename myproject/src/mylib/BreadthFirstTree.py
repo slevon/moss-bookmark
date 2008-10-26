@@ -10,7 +10,6 @@ class BreadthFirstTree:
         traversal = set()
         waitQueue = []
         if rootNode in graph:
-            print "root node in graph"
             #set frind of root node
             waitQueue.append(rootNode)
             while len(waitQueue):#zero is false
@@ -30,7 +29,6 @@ class BreadthFirstTree:
                             resultGraph[neightbor].append(traverseNode)
                         else:
                             resultGraph[neightbor] = [traverseNode]
-        print resultGraph
         return resultGraph
 if __name__ == "__main__":
     graph = {}
