@@ -164,8 +164,8 @@ class MainWindow(QtGui.QMainWindow):
     def about(self):
         QtGui.QMessageBox.about(self, self.tr("About Moss graph viewr"),
             self.tr("The <b>Application</b> provide Reader/Editor of graph data structure in GUI mode.<br/>"
-                    "This is version 0.2 Alpha.<br/>"
-                    "First version that support layout."))
+                    "This is version 0.2.1 Alpha.<br/>"
+                    "First version that support Shortest path algorithm."))
     def addNode(self):
         nodeName, ok = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter node name:')
         if ok:
@@ -192,7 +192,6 @@ class MainWindow(QtGui.QMainWindow):
             try:
                 self.mygraph.setWeight(float(weight),str(source), str(dest))
             except ValueError:
-                #print "Value error"
                 pass
     def infoGraph(self):
         info  = "<table border=1><tr><th>  Edge  </th>\
@@ -210,9 +209,6 @@ class MainWindow(QtGui.QMainWindow):
         info += "</table>"
         QtGui.QMessageBox.about(self, self.tr("Graph Info"),
             self.tr(info))
-        #print "Whole graph",self.mygraph.getGraph()
-        #print "All edges",self.mygraph.getEdges()
-        #print "To String\n",self.mygraph.toString()
     def newGraph(self):
         self.mygraph.clean()
         del self.mygraph
