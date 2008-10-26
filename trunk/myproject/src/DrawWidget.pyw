@@ -41,7 +41,7 @@ class MaNode(QtGui.QGraphicsItem):
                                     (MaNode.NHigh*(3/10)))
             penstyle.setFocalPoint((MaNode.NWigth*(3/10)),
                                     (MaNode.NHigh*(3/10)))
-            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.blue).light(170))
+            penstyle.setColorAt(0,QtGui.QColor(QtGui.QColor(0, 0, 255, 255)).light(170))
             penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.darkBlue).light(220))
         elif gNodeType == MaNode.ULC:
             penstyle.setCenter((MaNode.NWigth*(3/10)),
@@ -51,8 +51,8 @@ class MaNode(QtGui.QGraphicsItem):
             penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.yellow).light(120))
             penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.darkYellow).light(120))
         elif gNodeType == MaNode.HLN:#High light No click
-            penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.blue).light(120))#zero is center out
-            penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.blue).light(170))#one is border in
+            penstyle.setColorAt(0,QtGui.QColor(QtGui.QColor(0, 50, 255, 255)).light(160))#zero is center out
+            penstyle.setColorAt(1,QtGui.QColor(QtGui.QColor(0, 50, 255, 255)).light(120))#one is border in
         elif gNodeType == MaNode.ULN:
             penstyle.setColorAt(1,QtGui.QColor(QtCore.Qt.yellow))
             penstyle.setColorAt(0,QtGui.QColor(QtCore.Qt.darkYellow).light(150))
@@ -262,10 +262,10 @@ class MaEdge(QtGui.QGraphicsItem):
         if line.length() == 0.0:
             return
         if self.paintStatus == MaEdge.Highlight:
-            painter.setPen(QtGui.QPen(QtCore.Qt.red, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+            painter.setPen(QtGui.QPen(QtGui.QColor(0, 50, 255, 255), 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
             painter.drawText(QtCore.QPointF(newx,newy),str(self.weight))
         else:
-            painter.setPen(QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+            painter.setPen(QtGui.QPen(QtCore.Qt.gray, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
             painter.drawText(QtCore.QPointF(newx,newy),str(self.weight))
         painter.drawLine(line)
 
@@ -403,12 +403,20 @@ class DrawWidget(QtGui.QGraphicsView):
     def delEdge(self,source,dest):
         if (source,dest) in self.gEdge:
             self.scene.removeItem(self.gEdge[(source,dest)])
-        elif  (dest,source) in self.gEdge:
+            self.gNode[source].edgeList.remove(self.gEdge[(source,dest)])
+            self.gNode[dest].edgeList.remove(self.gEdge[(source,dest)])
+            del self.gEdge[(source,dest)]
+        if  (dest,source) in self.gEdge:
             self.scene.removeItem(self.gEdge[(dest,source)])
+            self.gNode[dest].edgeList.remove(self.gEdge[(dest,source)])
+            self.gNode[source].edgeList.remove(self.gEdge[(dest,source)])
+            del self.gEdge[(dest,source)]
         if dest in self.graph[source]:
             self.graph[source].remove(dest)
             self.graph[dest].remove(source)
-        pass
+        if source in self.graph[dest]:
+            self.graph[dest].remove(source)
+            self.graph[source].remove(dest)
     def toString(self):
         result = ""
         for node in self.graph:

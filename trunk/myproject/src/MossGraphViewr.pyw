@@ -1,5 +1,4 @@
 import sys
-#import psyco
 import imp
 
 from mylib.HighestDegreeNode import HighestDegreeNode
@@ -8,6 +7,7 @@ from mylib.BreadthFirstTree  import BreadthFirstTree
 from mylib.GraphMLHelpr      import GraphMLHelpr
 from mylib.LayoutInfo        import LayoutInfo
 from mylib.PrimMinimumSpanningTree import PrimMinimumSpanningTree
+from mylib.ShortestPath      import ShortestPath
 
 from DrawWidget              import DrawWidget,MaNode,MaEdge
 
@@ -29,11 +29,16 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowIcon(QtGui.QIcon('../images/app_icon.png'))
         #set title of the application
         self.setCentralWidget(self.mygraph)
+        self.welcome()
         self.setWindowTitle('Moss Graph Viewr Qt')
         self.setCenterScreen()
 
     def createActions(self):
         #file{
+        self.newMenu = QtGui.QAction(self.tr("&New graph"),self)
+        self.newMenu.setShortcut('Alt+Shift+N')
+        self.connect(self.newMenu,QtCore.SIGNAL('triggered()'),self.newGraph)
+
         self.openFileMenu = QtGui.QAction(self.tr("&Open file"),self)
         self.openFileMenu.setShortcut('Ctrl+O')
         self.connect(self.openFileMenu,QtCore.SIGNAL('triggered()'),self.openFile)
@@ -83,6 +88,8 @@ class MainWindow(QtGui.QMainWindow):
         self.mstMenu = QtGui.QAction(self.tr("&Prim Minimum Spanning Tree"),self)
         self.connect(self.mstMenu,QtCore.SIGNAL("triggered()"),self.mstTree)
 
+        self.shtMenu = QtGui.QAction(self.tr("&Dijkstra shortest path"),self)
+        self.connect(self.shtMenu,QtCore.SIGNAL("triggered()"),self.shtPath)
         #}algorithm
         #layout{
         #self.layoutInfoMenu = QtGui.QAction(self.tr("&Layout info"),self)
@@ -99,6 +106,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def createMenus(self):
         self.filemenu = self.menuBar().addMenu(self.tr("&File"))
+        self.filemenu.addAction(self.newMenu)
         self.filemenu.addAction(self.openFileMenu)
         self.filemenu.addAction(self.saveFileMenu)
         self.filemenu.addAction(self.exitMenu)
@@ -115,7 +123,7 @@ class MainWindow(QtGui.QMainWindow):
         self.algoMenu.addAction(self.highestDegreeMenu)
         self.algoMenu.addAction(self.bstMenu)
         self.algoMenu.addAction(self.mstMenu)
-
+        self.algoMenu.addAction(self.shtMenu)
         #self.layoutMenu = self.menuBar().addMenu(self.tr("&Layout"))
         #self.layoutMenu.addAction(self.layoutInfoMenu)
 
@@ -138,7 +146,21 @@ class MainWindow(QtGui.QMainWindow):
             event.accept()
         else:
             event.ignore()
-
+    def welcome(self):
+        self.mygraph.addEdge("W", "e")
+        self.mygraph.setWeight(4.0, "W", "e")
+        self.mygraph.addEdge("e", "l")
+        self.mygraph.setWeight(7.0, "e", "l")
+        self.mygraph.addEdge("l", "c")
+        self.mygraph.setWeight(2.0, "l", "c")
+        self.mygraph.addEdge("c", "o")
+        self.mygraph.setWeight(3.0, "c", "o")
+        self.mygraph.addEdge("o", "m")
+        self.mygraph.setWeight(1.0, "o", "m")
+        self.mygraph.addEdge("m", "e")
+        self.mygraph.setWeight(5.0, "m", "e")
+        bst = BreadthFirstTree().getResult(self.mygraph.getGraph(), "c")
+        self.setResult(bst)
     def about(self):
         QtGui.QMessageBox.about(self, self.tr("About Moss graph viewr"),
             self.tr("The <b>Application</b> provide Reader/Editor of graph data structure in GUI mode.<br/>"
@@ -191,6 +213,11 @@ class MainWindow(QtGui.QMainWindow):
         #print "Whole graph",self.mygraph.getGraph()
         #print "All edges",self.mygraph.getEdges()
         #print "To String\n",self.mygraph.toString()
+    def newGraph(self):
+        self.mygraph.clean()
+        del self.mygraph
+        self.mygraph = DrawWidget()
+        self.setCentralWidget(self.mygraph)
     def openFile(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file',
                     '.',"XML File (*.xml *.graphML)")
@@ -231,9 +258,56 @@ class MainWindow(QtGui.QMainWindow):
             self.setResult(bst)
         else:
             QtGui.QMessageBox.information(self,"Invalid input","root node empty")
+
     def mstTree(self):
-        mst = PrimMinimumSpanningTree().getResult(self.mygraph)#weighted graph
+        mst,weightDict = PrimMinimumSpanningTree().getResult(self.mygraph)#weighted graph
         self.setResult(mst)
+        weightResult  = "<table border=1><tr><th>  Node  </th>\
+                <th>  Total weight  </th></tr>"
+        totalWeight = 0
+        for node in weightDict:
+            weightResult += "<tr>"
+            weightResult += "<td align='center'>%s</td>"%(node)
+            weightResult += "<td align='center'>%d</td>"%(weightDict[node])
+            weightResult += "</tr>"
+            totalWeight += weightDict[node]
+        weightResult += "<tr><th> Total Weights:</th><th>%d</th></tr>"%(totalWeight)
+        weightResult += "</table>"
+        QtGui.QMessageBox.about(self, self.tr("Result Info"),
+            self.tr(weightResult))
+        #print "Weight record", weightDict
+
+    def shtPath(self):
+        source, ok = QtGui.QInputDialog.getText(self, 'Source node for shortest path', 'Enter source node name:')
+        if ok and source != "":
+            #bst = BreadthFirstTree().getResult(self.mygraph.getGraph(), str(rootNode))
+            dest, ok = QtGui.QInputDialog.getText(self, 'Destination node for shortest path', 'Enter destination node name:')
+            if ok and dest != "":
+                sht,weightDict = ShortestPath().getResult(self.mygraph, str(source), str(dest))
+                self.setResult(sht)
+                print "Graph",sht
+                #display record
+                print "Weight record", weightDict
+                weightResult  = "<table border=1><tr><th>  Node  </th>\
+                <th>  Total weight  </th></tr>"
+                totalWeight = 0
+                for node in sht:
+                    weightResult += "<tr>"
+                    weightResult += "<td align='center'>%s</td>"%(node)
+                    if weightDict[node] == ():
+                        weightResult += "<td align='center'>---</td>"
+                    else:
+                        weightResult += "<td align='center'>%d</td>"%(weightDict[node])
+                        weightResult += "</tr>"
+                        totalWeight += weightDict[node]
+                weightResult += "<tr><th> Total Weights:</th><th>%d</th></tr>"%(totalWeight)
+                weightResult += "</table>"
+                QtGui.QMessageBox.about(self, self.tr("Result Info"),
+                    self.tr(weightResult))
+            else:
+                QtGui.QMessageBox.information(self,"Invalid input","Destination node empty")
+        else:
+            QtGui.QMessageBox.information(self,"Invalid input","Source node empty")
     def setResult(self,resultGraph):
         #clear old status
         for node in self.mygraph.gNode:
@@ -257,6 +331,12 @@ class MainWindow(QtGui.QMainWindow):
 
 #if this is main module do this
 if __name__ == "__main__":
+    try:
+        import psyco
+        psyco.full()
+        print "use psyco"
+    except:
+        pass
     #psyco.full()
     #Create Object application need for Qt apps
     app = QtGui.QApplication(sys.argv)
