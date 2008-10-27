@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+ <!-- attribute  weight is specifix with moss graph viewr only!!! -->
+	<graph id="G" edgedefault="undirected">
+		<node id="a"/>
+		<node id="c"/>
+		<node id="b"/>
+		<node id="e"/>
+		<node id="d"/>
+		<node id="g"/>
+		<node id="f"/>
+		<node id="i"/>
+		<node id="h"/>
+		<node id="j"/>
+		<edge source="c" target="f" weight="24.000000" />
+		<edge source="g" target="h" weight="99.000000" />
+		<edge source="c" target="g" weight="65.000000" />
+		<edge source="e" target="h" weight="35.000000" />
+		<edge source="e" target="g" weight="17.000000" />
+		<edge source="e" target="d" weight="51.000000" />
+		<edge source="f" target="i" weight="72.000000" />
+		<edge source="i" target="j" weight="83.000000" />
+		<edge source="c" target="d" weight="23.000000" />
+		<edge source="g" target="i" weight="45.000000" />
+		<edge source="d" target="g" weight="20.000000" />
+		<edge source="h" target="j" weight="38.000000" />
+		<edge source="a" target="d" weight="56.000000" />
+		<edge source="g" target="f" weight="40.000000" />
+		<edge source="a" target="b" weight="33.000000" />
+		<edge source="b" target="e" weight="21.000000" />
+		<edge source="a" target="c" weight="10.000000" />
+		<edge source="g" target="j" weight="42.000000" />
+		<edge source="b" target="d" weight="13.000000" />
+	</graph>
+</graphml>

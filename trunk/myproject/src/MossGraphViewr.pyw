@@ -174,8 +174,8 @@ class MainWindow(QtGui.QMainWindow):
     def about(self):
         QtGui.QMessageBox.about(self, self.tr("About Moss graph viewr"),
             self.tr("The <b>Application</b> provide Reader/Editor of graph data structure in GUI mode.<br/>"
-                    "This is version 0.2.2 Alpha.<br/>"
-                    "First version that support File directory history."))
+                    "This is version 0.2.3 Beta.<br/>"
+                    "First version that support Open/Save weighted graph file."))
     def addNode(self):
         nodeName, ok = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter node name:')
         if ok:
@@ -230,6 +230,7 @@ class MainWindow(QtGui.QMainWindow):
         filenamebuff = str(filename)
         if filename != "":
             self.file_dir_hist = filenamebuff[0:filenamebuff.rfind("/")+1]
+            del filenamebuff
             file=open(filename)
             data = file.read()
             file.close()
@@ -238,9 +239,12 @@ class MainWindow(QtGui.QMainWindow):
     def saveFile(self):
         filename = QtGui.QFileDialog.getSaveFileName(self,
                                                      'Save file',
-                                                     '.',
+                                                     self.file_dir_hist,
                                                      'GraphML File(*.graphml *.xml)')
+        filenamebuff = str(filename)
         if filename != "":
+            self.file_dir_hist = filenamebuff[0:filenamebuff.rfind("/")+1]
+            del filenamebuff
             graphML = GraphMLHelpr()
             graphML.saveXML(filename,self.mygraph)
     def graphMLAddGraph(self,inputText):
@@ -255,6 +259,12 @@ class MainWindow(QtGui.QMainWindow):
             self.mygraph.addNode(str(node.attributes['id'].value))
         for edge in edges:
             self.mygraph.addEdge(str(edge.attributes['source'].value),str(edge.attributes['target'].value))
+            try:
+                self.mygraph.setWeight(float(edge.attributes['weight'].value),str(edge.attributes['source'].value),str(edge.attributes['target'].value))
+            except KeyError:
+                self.mygraph.setWeight(1.0,str(edge.attributes['source'].value),str(edge.attributes['target'].value))
+            except ValueError:
+                self.mygraph.setWeight(1.0,str(edge.attributes['source'].value),str(edge.attributes['target'].value))
         print self.mygraph.toString()
     def highestDegree(self):
         highestList = HighestDegreeNode().getResult(self.mygraph.getGraph())
