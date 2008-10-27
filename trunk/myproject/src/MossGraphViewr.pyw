@@ -329,11 +329,11 @@ class MainWindow(QtGui.QMainWindow):
 if __name__ == "__main__":
     try:
         import psyco
+        print "using psyco"
         psyco.full()
-        print "use psyco"
     except:
         pass
-    #psyco.full()
+
     #Create Object application need for Qt apps
     app = QtGui.QApplication(sys.argv)
     #Create main window
