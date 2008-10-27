@@ -160,13 +160,22 @@ class MainWindow(QtGui.QMainWindow):
         self.mygraph.setWeight(1.0, "o", "m")
         self.mygraph.addEdge("m", "e")
         self.mygraph.setWeight(5.0, "m", "e")
+        '''
+        self.mygraph.addEdge("m", "O")
+        self.mygraph.setWeight(0.0, "m", "O")
+        self.mygraph.addEdge("O", "s")
+        self.mygraph.setWeight(2.0, "O", "s")
+        self.mygraph.addEdge("s", "S")
+        self.mygraph.setWeight(2.0, "s", "S")
+        '''
+
         bst = BreadthFirstTree().getResult(self.mygraph.getGraph(), "c")
         self.setResult(bst)
     def about(self):
         QtGui.QMessageBox.about(self, self.tr("About Moss graph viewr"),
             self.tr("The <b>Application</b> provide Reader/Editor of graph data structure in GUI mode.<br/>"
-                    "This is version 0.2.1 Alpha.<br/>"
-                    "First version that support Shortest path algorithm."))
+                    "This is version 0.2.2 Alpha.<br/>"
+                    "First version that support File directory history."))
     def addNode(self):
         nodeName, ok = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter node name:')
         if ok:
