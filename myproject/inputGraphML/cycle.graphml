@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+ <key id="weight" for="edge" attr.name="weight" attr.type="double"/> 	<graph id="G" edgedefault="undirected">
+		<node id="a"/>
+		<node id="c"/>
+		<node id="b"/>
+		<node id="e"/>
+		<node id="d"/>
+		<node id="g"/>
+		<node id="f"/>
+		<node id="i"/>
+		<node id="h"/>
+		<node id="k"/>
+		<node id="j"/>
+		<node id="m"/>
+		<node id="l"/>
+		<node id="o"/>
+		<node id="n"/>
+		<node id="q"/>
+		<node id="p"/>
+		<node id="s"/>
+		<node id="r"/>
+		<node id="u"/>
+		<node id="t"/>
+		<node id="w"/>
+		<node id="v"/>
+		<node id="y"/>
+		<node id="x"/>
+		<node id="z"/>
+		<edge source="k" target="j"/>
+		<edge source="e" target="d"/>
+		<edge source="g" target="h"/>
+		<edge source="a" target="m"/>
+		<edge source="i" target="h"/>
+		<edge source="o" target="n"/>
+		<edge source="w" target="v"/>
+		<edge source="q" target="r"/>
+		<edge source="u" target="t"/>
+		<edge source="y" target="x"/>
+		<edge source="b" target="s"/>
+		<edge source="k" target="l"/>
+		<edge source="r" target="t"/>
+		<edge source="e" target="f"/>
+		<edge source="i" target="j"/>
+		<edge source="l" target="n"/>
+		<edge source="w" target="x"/>
+		<edge source="m" target="s"/>
+		<edge source="c" target="d"/>
+		<edge source="q" target="p"/>
+		<edge source="u" target="v"/>
+		<edge source="g" target="f"/>
+		<edge source="y" target="z"/>
+		<edge source="a" target="c"/>
+		<edge source="o" target="p"/>
+		<edge source="b" target="z"/>
+	</graph>
+</graphml>
