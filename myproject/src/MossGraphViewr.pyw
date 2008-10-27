@@ -27,6 +27,7 @@ class MainWindow(QtGui.QMainWindow):
 
         #set icon of the application
         self.setWindowIcon(QtGui.QIcon('../images/app_icon.png'))
+        self.file_dir_hist = "."
         #set title of the application
         self.setCentralWidget(self.mygraph)
         self.welcome()
@@ -216,8 +217,10 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.mygraph)
     def openFile(self):
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file',
-                    '.',"XML File (*.xml *.graphML)")
+                    self.file_dir_hist,"XML File (*.xml *.graphML)")
+        filenamebuff = str(filename)
         if filename != "":
+            self.file_dir_hist = filenamebuff[0:filenamebuff.rfind("/")+1]
             file=open(filename)
             data = file.read()
             file.close()
