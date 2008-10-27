@@ -478,9 +478,12 @@ class DrawWidget(QtGui.QGraphicsView):
             self.timerId = self.startTimer(1000 / 25)
     def timerEvent(self, event):
         nodes = []
-        for nodename in self.gNode:
-            nodes.append(self.gNode[nodename])
-            self.gNode[nodename].calculateForces()
+        try:
+            for nodename in self.gNode:
+                nodes.append(self.gNode[nodename])
+                self.gNode[nodename].calculateForces()
+        except AttributeError:
+            pass
 
         itemsMoved = False
         for node in nodes:

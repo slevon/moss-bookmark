@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+ <!-- attribute  weight is specifix with moss graph viewr only!!! -->
+	<graph id="G" edgedefault="undirected">
+		<node id="u5"/>
+		<node id="u4"/>
+		<node id="u1"/>
+		<node id="u0"/>
+		<node id="u3"/>
+		<node id="u2"/>
+		<edge source="u5" target="u3" weight="17.000000" />
+		<edge source="u0" target="u2" weight="13.000000" />
+		<edge source="u5" target="u0" weight="8.000000" />
+		<edge source="u1" target="u3" weight="6.000000" />
+		<edge source="u4" target="u0" weight="16.000000" />
+		<edge source="u5" target="u1" weight="10.000000" />
+		<edge source="u5" target="u4" weight="7.000000" />
+		<edge source="u3" target="u2" weight="14.000000" />
+		<edge source="u4" target="u3" weight="5.000000" />
+		<edge source="u5" target="u2" weight="11.000000" />
+	</graph>
+</graphml>
