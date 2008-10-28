@@ -280,15 +280,24 @@ class MainWindow(QtGui.QMainWindow):
     def mstTree(self):
         mst,weightDict = PrimMinimumSpanningTree().getResult(self.mygraph)#weighted graph
         self.setResult(mst)
+        #display record
         weightResult  = "<table border=1><tr><th>  Node  </th>\
-                <th>  Total weight  </th></tr>"
+        <th>  Total weight  </th></tr>"
         totalWeight = 0
-        for node in weightDict:
+        resultOrdered = []
+        for node in mst:
+            resultOrdered.append((weightDict[node],node))
+        resultOrdered.sort()
+        N = 1 #index of node
+        W = 0 #index of weight
+
+
+        for result in resultOrdered:
             weightResult += "<tr>"
-            weightResult += "<td align='center'>%s</td>"%(node)
-            weightResult += "<td align='center'>%d</td>"%(weightDict[node])
+            weightResult += "<td align='center'>%s</td>"%(result[N])
+            weightResult += "<td align='center'>%d</td>"%(result[W])
             weightResult += "</tr>"
-            totalWeight += weightDict[node]
+            totalWeight += result[W]
         weightResult += "<tr><th> Total Weights:</th><th>%d</th></tr>"%(totalWeight)
         weightResult += "</table>"
         QtGui.QMessageBox.about(self, self.tr("Result Info"),
@@ -303,21 +312,24 @@ class MainWindow(QtGui.QMainWindow):
             if ok and dest != "":
                 sht,weightDict = ShortestPath().getResult(self.mygraph, str(source), str(dest))
                 self.setResult(sht)
-                print "Graph",sht
                 #display record
-                print "Weight record", weightDict
                 weightResult  = "<table border=1><tr><th>  Node  </th>\
                 <th>  Total weight  </th></tr>"
                 totalWeight = 0
+                resultOrdered = []
                 for node in sht:
+                    resultOrdered.append((weightDict[node],node))
+                resultOrdered.sort()
+                N = 1 #index of node
+                W = 0 #index of weight
+
+
+                for result in resultOrdered:
                     weightResult += "<tr>"
-                    weightResult += "<td align='center'>%s</td>"%(node)
-                    if weightDict[node] == ():
-                        weightResult += "<td align='center'>---</td>"
-                    else:
-                        weightResult += "<td align='center'>%d</td>"%(weightDict[node])
-                        weightResult += "</tr>"
-                        totalWeight += weightDict[node]
+                    weightResult += "<td align='center'>%s</td>"%(result[N])
+                    weightResult += "<td align='center'>%d</td>"%(result[W])
+                    weightResult += "</tr>"
+                    totalWeight += result[W]
                 weightResult += "<tr><th> Total Weights:</th><th>%d</th></tr>"%(totalWeight)
                 weightResult += "</table>"
                 QtGui.QMessageBox.about(self, self.tr("Result Info"),
