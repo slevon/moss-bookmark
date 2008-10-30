@@ -381,26 +381,21 @@ class DrawWidget(QtGui.QGraphicsView):
             for neightbor in neightbors:
                 if (node,neightbor) in self.gEdge:
                     self.scene.removeItem(self.gEdge[(node,neightbor)])
-
-                elif (neightbor,node) in self.gEdge:
+                    self.gNode[node].edgeList.remove(self.gEdge[(node,neightbor)])
+                    self.gNode[neightbor].edgeList.remove(self.gEdge[(node,neightbor)])
+                    del self.gEdge[(node,neightbor)]
+                if (neightbor,node) in self.gEdge:
                     self.scene.removeItem(self.gEdge[(neightbor,node)])
-                print "Del %s to %s"%(node,neightbor)
-                self.graph[neightbor].remove(node)
+                    self.gNode[node].edgeList.remove(self.gEdge[(neightbor,node)])
+                    self.gNode[neightbor].edgeList.remove(self.gEdge[(neightbor,node)])
+                    del self.gEdge[(neightbor,node)]
+                if node in self.graph[neightbor]:
+                    self.graph[neightbor].remove(node)
+            #self.graph[neightbor].remove(node)
             del self.gNode[node]
             del self.graph[node]
-    def setWeight(self,weight,source,dest):
-        if (source,dest) in self.gEdge:
-            self.gEdge[(source,dest)].setWeight(weight)
-        elif  (dest,source) in self.gEdge:
-            self.gEdge[(dest,source)].setWeight(weight)
-    def getWeight(self,source,dest):
-        if (source,dest) in self.gEdge:
-            return self.gEdge[(source,dest)].getWeight()
-        elif  (dest,source) in self.gEdge:
-            return self.gEdge[(dest,source)].getWeight()
-
-
     def delEdge(self,source,dest):
+        print "del",source,"--",dest
         if (source,dest) in self.gEdge:
             self.scene.removeItem(self.gEdge[(source,dest)])
             self.gNode[source].edgeList.remove(self.gEdge[(source,dest)])
@@ -417,6 +412,19 @@ class DrawWidget(QtGui.QGraphicsView):
         if source in self.graph[dest]:
             self.graph[dest].remove(source)
             self.graph[source].remove(dest)
+    def setWeight(self,weight,source,dest):
+        if (source,dest) in self.gEdge:
+            self.gEdge[(source,dest)].setWeight(weight)
+        elif  (dest,source) in self.gEdge:
+            self.gEdge[(dest,source)].setWeight(weight)
+    def getWeight(self,source,dest):
+        if (source,dest) in self.gEdge:
+            return self.gEdge[(source,dest)].getWeight()
+        elif  (dest,source) in self.gEdge:
+            return self.gEdge[(dest,source)].getWeight()
+
+
+
     def toString(self):
         result = ""
         for node in self.graph:
