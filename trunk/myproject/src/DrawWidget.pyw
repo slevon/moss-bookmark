@@ -303,6 +303,7 @@ class DrawWidget(QtGui.QGraphicsView):
         self.gNode = {}
         self.gEdge = {} #set of tuple of edge point to gEdge
         self.kownt = 0
+        self.animateStatus = True
     def clean(self):
         del self.gEdge
         del self.gGraph
@@ -484,23 +485,31 @@ class DrawWidget(QtGui.QGraphicsView):
     def itemMoved(self):
         if not self.timerId:
             self.timerId = self.startTimer(1000 / 25)
+    def animateChange(self):
+        if self.animateStatus:
+            self.animateStatus = False
+        else:
+            self.animateStatus = True
+    def getAnimateStatus(self):
+        return self.animateStatus
     def timerEvent(self, event):
-        nodes = []
-        try:
-            for nodename in self.gNode:
-                nodes.append(self.gNode[nodename])
-                self.gNode[nodename].calculateForces()
-        except AttributeError:
-            pass
+        if self.animateStatus == True:
+            nodes = []
+            try:
+                for nodename in self.gNode:
+                    nodes.append(self.gNode[nodename])
+                    self.gNode[nodename].calculateForces()
+            except AttributeError:
+                pass
 
-        itemsMoved = False
-        for node in nodes:
-            if node.advance():
-                itemsMoved = True
+            itemsMoved = False
+            for node in nodes:
+                if node.advance():
+                    itemsMoved = True
 
-        if not itemsMoved:
-            self.killTimer(self.timerId)
-            self.timerId = 0
+            if not itemsMoved:
+                self.killTimer(self.timerId)
+                self.timerId = 0
     def scaleView(self, scaleFactor):
         factor = self.matrix().scale(scaleFactor, scaleFactor).mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
 
