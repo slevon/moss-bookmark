@@ -78,6 +78,8 @@ class MainWindow(QtGui.QMainWindow):
         self.graphInfoMenu.setShortcut('Ctrl+G')
         self.connect(self.graphInfoMenu,QtCore.SIGNAL("triggered()"),self.infoGraph)
 
+        self.animateMenu = QtGui.QAction(self.tr("&Stop animate"),self)
+        self.connect(self.animateMenu,QtCore.SIGNAL("triggered()"),self.animateStatus)
         #}graph
         #algorithm{
         self.highestDegreeMenu = QtGui.QAction(self.tr("&Highest Degree Node"),self)
@@ -119,6 +121,7 @@ class MainWindow(QtGui.QMainWindow):
         self.graphmenu.addAction(self.delEdgeMenu)
         self.graphmenu.addAction(self.setWeightMenu)
         self.graphmenu.addAction(self.graphInfoMenu)
+        self.graphmenu.addAction(self.animateMenu)
 
         self.algoMenu = self.menuBar().addMenu(self.tr("&Algorithm"))
         self.algoMenu.addAction(self.highestDegreeMenu)
@@ -176,6 +179,8 @@ class MainWindow(QtGui.QMainWindow):
             self.tr("The <b>Application</b> provide Reader/Editor of graph data structure in GUI mode.<br/>"
                     "This is version 0.2.3 Beta.<br/>"
                     "First version that support Open/Save weighted graph file."))
+
+    #Graph Method
     def addNode(self):
         nodeName, ok = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter node name:')
         if ok:
@@ -219,6 +224,14 @@ class MainWindow(QtGui.QMainWindow):
         info += "</table>"
         QtGui.QMessageBox.about(self, self.tr("Graph Info"),
             self.tr(info))
+    def animateStatus(self):
+        if self.mygraph.getAnimateStatus():
+            self.animateMenu.setText(self.tr("&Start animate"))
+            self.mygraph.animateChange()
+        else:
+            self.animateMenu.setText(self.tr("&Stop animate"))
+            self.mygraph.animateChange()
+    #File Method
     def newGraph(self):
         self.mygraph.clean()
         del self.mygraph
@@ -235,7 +248,6 @@ class MainWindow(QtGui.QMainWindow):
             data = file.read()
             file.close()
             self.graphMLAddGraph(data)
-
     def saveFile(self):
         filename = QtGui.QFileDialog.getSaveFileName(self,
                                                      'Save file',
