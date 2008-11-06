@@ -288,8 +288,8 @@ class MaEdge(QtGui.QGraphicsItem):
         #painter.drawPolygon(QtGui.QPolygonF([line.p2(), destArrowP1, destArrowP2]))
 
 class DrawWidget(QtGui.QGraphicsView):
-    scensSize = 400
-    drawSize  = 400
+    scensSize = 600
+    drawSize  = 600
     def __init__(self):
         QtGui.QGraphicsView.__init__(self)
         self.scene = QtGui.QGraphicsScene(self)

@@ -21,7 +21,7 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self)
         self.createActions()
         self.createMenus()
-        self.resize(500,500)
+        self.resize(1000,650)
         #test addWidget area
         self.mygraph = DrawWidget()
 
@@ -278,6 +278,7 @@ class MainWindow(QtGui.QMainWindow):
             except ValueError:
                 self.mygraph.setWeight(1.0,str(edge.attributes['source'].value),str(edge.attributes['target'].value))
         print self.mygraph.toString()
+        self.animateMenu.setText(self.tr("&Stop animate"))
     def highestDegree(self):
         highestList = HighestDegreeNode().getResult(self.mygraph.getGraph())
         self.setResult(highestList)
